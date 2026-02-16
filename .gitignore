@@ -1,0 +1,30 @@
+# Dependencias
+node_modules/
+
+# Datos de pacientes
+data/patients.json
+
+# Documentos firmados
+firmados/
+
+# Documentos originales
+documentos-originales/
+
+# Sistema operativo
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.cursor/
+*.swp
+*.swo
+
+# Logs
+npm-debug.log*
+*.log
+
+# Variables de entorno
+.env
+.env.local

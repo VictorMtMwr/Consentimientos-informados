@@ -1,0 +1,51 @@
+/* ===== RESET & BASE ===== */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #00838f;
+  --primary-dark: #006064;
+  --primary-light: #e0f2f1;
+  --primary-gradient: linear-gradient(135deg, #00838f 0%, #00695c 100%);
+  --secondary: #546e7a;
+  --success: #2e7d32;
+  --success-light: #e8f5e9;
+  --danger: #c62828;
+  --danger-light: #ffebee;
+  --warning: #ef6c00;
+  --warning-light: #fff3e0;
+  --bg: #eceff1;
+  --bg-white: #ffffff;
+  --text: #263238;
+  --text-secondary: #607d8b;
+  --border: #cfd8dc;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.14);
+  --radius: 10px;
+  --radius-sm: 6px;
+  --transition: 0.2s ease;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+@media (max-width: 480px) {
+  .header .logo-text h1 { font-size: 0.95rem; }
+  .header .logo-text span { display: none; }
+}
