@@ -6,8 +6,10 @@ let signaturePad = null;
 function initSignaturePad() {
   const canvas = document.getElementById('signatureCanvas');
   if (!canvas) return;
-  canvas.width = 450;
-  canvas.height = 160;
+  const container = canvas.closest('.signature-canvas-wrapper');
+  const maxW = container ? container.clientWidth - 16 : 450;
+  canvas.width = Math.min(450, maxW);
+  canvas.height = Math.min(160, Math.round(canvas.width * 0.36));
 
   signaturePad = new SignaturePad(canvas, {
     backgroundColor: 'rgb(255, 255, 255)',

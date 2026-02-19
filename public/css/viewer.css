@@ -573,26 +573,65 @@
 }
 
 @media (max-width: 768px) {
-  .viewer-toolbar { padding: 0.75rem 1rem; }
-  .form-main { padding: 1rem; }
-  .form-section { padding: 1.25rem; }
+  .viewer-toolbar { padding: 0.6rem 1rem; top: 48px; gap: 0.5rem; }
+  .viewer-toolbar .doc-title { font-size: 0.85rem; min-width: 120px; }
+  .viewer-toolbar .btn { padding: 0.35rem 0.75rem; font-size: 0.78rem; }
+  .form-main { padding: 0.75rem; }
+  .form-container { max-width: 100%; }
+  .consent-form { gap: 1rem; }
+  .form-section { padding: 1rem; }
   .form-grid { grid-template-columns: 1fr; }
-  .form-header-section { padding: 1.5rem; }
-  .document-content-box { padding: 1rem; }
+  .form-header-section { padding: 1.25rem; }
+  .form-title { font-size: 1.1rem; }
+  .form-subtitle { font-size: 0.82rem; }
+  .form-section-title { font-size: 0.9rem; gap: 0.4rem; }
+  .document-content-box { padding: 1rem; font-size: 0.85rem; }
+  .document-content-box table { font-size: 0.78rem; display: block; overflow-x: auto; }
+  .form-checkbox { padding: 0.7rem 0.85rem; gap: 0.6rem; }
+  .form-checkbox span { font-size: 0.85rem; }
+  .no-auth-reason-box { padding: 0.85rem 1rem; }
+  .signature-form-area { padding: 0; }
+  .signature-canvas-container { width: 100%; }
+  .signature-canvas-wrapper { padding: 0.35rem; }
   .signature-canvas-wrapper canvas {
-    width: 300px !important;
-    height: 130px !important;
+    width: 100% !important;
+    max-width: 400px;
+    height: 140px !important;
   }
-  .signed-banner { flex-direction: column; text-align: center; }
+  .signed-banner { flex-direction: column; text-align: center; padding: 1rem; }
+  .signed-banner-content { flex-direction: column; gap: 0.5rem; }
+  .signed-banner-actions { width: 100%; justify-content: center; }
   .form-submit-area { flex-direction: column; }
   .form-submit-area .btn { width: 100%; justify-content: center; }
+  .form-doctor-actions-section .form-submit-area { flex-direction: column; }
+  .doctor-info-banner { padding: 0.85rem !important; }
+  .doctor-info-row { gap: 0.6rem; }
+  .form-inline-field { margin: 0.5rem 0; }
+  .revocation-header-section { padding: 1.25rem !important; }
+  .revocation-icon { width: 50px; height: 50px; }
+  .revocation-icon svg { width: 30px; height: 30px; }
+  .revocation-info-box { padding: 1rem; font-size: 0.85rem; }
 }
 
 @media (max-width: 480px) {
+  .viewer-toolbar { top: 42px; padding: 0.5rem 0.75rem; }
+  .viewer-toolbar .doc-title { font-size: 0.78rem; min-width: 80px; }
+  .form-main { padding: 0.5rem; }
+  .form-section { padding: 0.85rem; }
+  .form-header-section { padding: 1rem; }
+  .form-title { font-size: 1rem; }
+  .form-field label { font-size: 0.72rem; }
+  .form-field input,
+  .form-field textarea,
+  .form-field select { font-size: 0.88rem; padding: 0.55rem 0.75rem; }
+  .document-content-box { padding: 0.75rem; font-size: 0.82rem; line-height: 1.6; }
   .signature-canvas-wrapper canvas {
-    width: 260px !important;
-    height: 110px !important;
+    height: 120px !important;
   }
+  .form-checkbox { padding: 0.6rem 0.75rem; }
+  .form-checkbox span { font-size: 0.82rem; }
+  .no-auth-checkbox span { font-size: 0.85rem !important; }
+  .revocation-info-box { padding: 0.85rem; font-size: 0.82rem; }
 }
 
 /* =============================================================================
@@ -659,4 +698,9 @@
 
 .revocation-checkbox input[type="checkbox"] {
   accent-color: var(--danger);
+}
+
+.required-mark {
+  color: var(--danger, #c62828);
+  font-weight: 700;
 }

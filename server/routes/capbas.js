@@ -2,7 +2,7 @@ const express = require('express');
 const http = require('http');
 const router = express.Router();
 
-const API_BASE = 'http://api-service:8080/Medihelp-api/capbas/get';
+const API_BASE = 'http://192.168.20.14:8080/Medihelp-api/capbas/get';
 
 router.get('/capbas/:tipdoc/:documento', (req, res) => {
   const { tipdoc, documento } = req.params;
