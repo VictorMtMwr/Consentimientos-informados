@@ -7,8 +7,10 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/loader.css">
 </head>
 <body>
+  <script src="js/page-loader.js"></script>
 
   <!-- HEADER -->
   <header class="header">
@@ -19,10 +21,14 @@
       <div class="header-center">
         <h2>Gestión de Consentimientos Informados</h2>
       </div>
-      <div class="header-right">
+      <div class="header-right" style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+        <button type="button" class="btn-header" id="btnDoctorLogout" title="Cerrar sesión">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Salir
+        </button>
         <a href="index.html" class="btn-header">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-          Volver
+          Inicio
         </a>
       </div>
     </div>
@@ -47,12 +53,19 @@
               <label for="patientTipoDoc">Tipo de Documento</label>
               <select id="patientTipoDoc">
                 <option value="CC">CC - Cédula de Ciudadanía</option>
-                <option value="CE">CE - Cédula de Extranjería</option>
                 <option value="TI">TI - Tarjeta de Identidad</option>
+                <option value="CE">CE - Cédula de Extranjería</option>
                 <option value="PA">PA - Pasaporte</option>
                 <option value="RC">RC - Registro Civil</option>
-                <option value="MS">MS - Menor sin ID</option>
-                <option value="AS">AS - Adulto sin ID</option>
+                <option value="CNV">CNV - Certificado de Nacido Vivo</option>
+                <option value="DE">DE - Documento Extranjero</option>
+                <option value="CD">CD - Carné Diplomático</option>
+                <option value="ASI">ASI - Adulto sin Identificación</option>
+                <option value="MSI">MSI - Menor sin Identificación</option>
+                <option value="SI">SI - Sin Identificación</option>
+                <option value="SC">SC - Salvoconducto</option>
+                <option value="PEP">PEP - Permiso Especial de Permanencia</option>
+                <option value="PTP">PTP - Permiso Temporal de Permanencia</option>
               </select>
             </div>
             <div class="field-group">
@@ -179,10 +192,30 @@
 
   <div class="toast-container"></div>
 
-  <script src="js/config.js"></script>
+  <script src="js/config.js?v=20260409a"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/doctor.js"></script>
-  <script>document.addEventListener('DOMContentLoaded', initDoctor);</script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const r = await fetch('/api/auth/me', { credentials: 'include' });
+        if (!r.ok) {
+          window.location.replace('doctor-login.html');
+          return;
+        }
+      } catch {
+        window.location.replace('doctor-login.html');
+        return;
+      }
+      document.getElementById('btnDoctorLogout')?.addEventListener('click', async () => {
+        try {
+          await fetch('/api/auth/logout', { method: 'POST', credentials: 'include' });
+        } catch (_) {}
+        window.location.replace('doctor-login.html');
+      });
+      initDoctor();
+    });
+  </script>
 </body>
 </html>

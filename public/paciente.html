@@ -7,8 +7,10 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/pages.css">
+  <link rel="stylesheet" href="css/loader.css">
 </head>
 <body>
+  <script src="js/page-loader.js"></script>
 
   <!-- HEADER -->
   <header class="header">
@@ -49,12 +51,19 @@
             <label for="patientLoginTipoDoc">Tipo de Documento</label>
             <select id="patientLoginTipoDoc">
               <option value="CC">CC - Cédula de Ciudadanía</option>
-              <option value="CE">CE - Cédula de Extranjería</option>
               <option value="TI">TI - Tarjeta de Identidad</option>
+              <option value="CE">CE - Cédula de Extranjería</option>
               <option value="PA">PA - Pasaporte</option>
               <option value="RC">RC - Registro Civil</option>
-              <option value="MS">MS - Menor sin ID</option>
-              <option value="AS">AS - Adulto sin ID</option>
+              <option value="CNV">CNV - Certificado de Nacido Vivo</option>
+              <option value="DE">DE - Documento Extranjero</option>
+              <option value="CD">CD - Carné Diplomático</option>
+              <option value="ASI">ASI - Adulto sin Identificación</option>
+              <option value="MSI">MSI - Menor sin Identificación</option>
+              <option value="SI">SI - Sin Identificación</option>
+              <option value="SC">SC - Salvoconducto</option>
+              <option value="PEP">PEP - Permiso Especial de Permanencia</option>
+              <option value="PTP">PTP - Permiso Temporal de Permanencia</option>
             </select>
           </div>
           <div class="field-group">
@@ -114,7 +123,7 @@
 
   <div class="toast-container"></div>
 
-  <script src="js/config.js"></script>
+  <script src="js/config.js?v=20260409a"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
   <script src="js/patient.js"></script>

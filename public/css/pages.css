@@ -1031,3 +1031,223 @@
   .pcc-footer { flex-wrap: wrap; }
   .revocation-badge { font-size: 0.68rem; }
 }
+
+/* =============================================================================
+   LOGIN MEDICO (doctor-login.html)
+   ============================================================================= */
+.login-page .landing-content {
+  max-width: 440px;
+}
+
+.login-card {
+  background: var(--bg-white);
+  border-radius: var(--radius);
+  padding: 2.25rem 2rem;
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.login-card h2 {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.35rem;
+}
+
+.login-card .login-lead {
+  font-size: 0.92rem;
+  color: var(--text-muted, #64748b);
+  margin-bottom: 1.5rem;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  text-align: left;
+}
+
+.login-form label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.login-form input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 1rem;
+  margin-top: 0.35rem;
+  box-sizing: border-box;
+}
+
+.login-form input:focus {
+  outline: none;
+  border-color: #00838f;
+  box-shadow: 0 0 0 3px rgba(0, 131, 143, 0.15);
+}
+
+.login-error {
+  display: none;
+  font-size: 0.88rem;
+  color: #b71c1c;
+  background: #ffebee;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-sm, 8px);
+  text-align: center;
+}
+
+.login-error.visible {
+  display: block;
+}
+
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.login-actions .btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.login-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+}
+
+.login-back:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+/* =============================================================================
+   PANEL ADMIN (usuarios users_consent)
+   ============================================================================= */
+.admin-main .admin-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.admin-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: var(--text);
+}
+
+.admin-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.admin-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm, 8px);
+  background: #fff;
+}
+
+.admin-users-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+.admin-users-table th,
+.admin-users-table td {
+  padding: 0.65rem 0.85rem;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+  vertical-align: middle;
+}
+
+.admin-users-table th {
+  background: #f8fafc;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.admin-users-table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.admin-th-actions,
+.admin-td-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.admin-td-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: flex-end;
+}
+
+.admin-btn-action {
+  font-size: 0.78rem !important;
+  padding: 0.35rem 0.65rem !important;
+}
+
+.admin-loading,
+.admin-empty,
+.admin-error {
+  text-align: center;
+  padding: 2rem !important;
+  color: #64748b;
+}
+
+.admin-error {
+  color: #b71c1c;
+}
+
+.admin-muted {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.admin-modal-wide {
+  max-width: 520px;
+}
+
+.admin-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.admin-form-grid .field-group {
+  margin: 0;
+}
+
+.admin-modal-actions {
+  grid-column: 1 / -1;
+  margin-top: 0.5rem;
+}
+
+@media (max-width: 600px) {
+  .admin-form-grid {
+    grid-template-columns: 1fr;
+  }
+  .admin-td-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

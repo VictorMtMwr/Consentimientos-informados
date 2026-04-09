@@ -1,6 +1,17 @@
 /* =============================================================================
    VIEWER / FORM PAGE
+   Referencia visual: cards blancas, Inter, escala en rem (≈16px base)
    ============================================================================= */
+.form-main,
+.consent-form,
+.document-content-box,
+.form-section,
+.form-field,
+.form-inline-field,
+.anx-doc {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 .viewer-toolbar {
   background: var(--bg-white);
   border-bottom: 1px solid var(--border);
@@ -25,7 +36,7 @@
 
 /* ===== FORM MAIN ===== */
 .form-main {
-  background: var(--bg);
+  background: #f8fafc;
   min-height: calc(100vh - 130px);
   padding: 1.5rem 2rem 3rem;
 }
@@ -38,16 +49,16 @@
 .consent-form {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 /* Form sections */
 .form-section {
-  background: var(--bg-white);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
 }
 
 .form-header-section {
@@ -58,15 +69,26 @@
   padding: 2rem;
 }
 
+.form-header-section .form-title {
+  color: #ffffff;
+}
+
+.form-header-section .form-subtitle {
+  color: rgba(255, 255, 255, 0.92);
+}
+
 .form-title {
-  font-size: 1.35rem;
-  font-weight: 800;
+  font-size: 1.6rem;
+  font-weight: 600;
   margin-bottom: 0.25rem;
+  color: #1e293b;
+  letter-spacing: -0.02em;
 }
 
 .form-subtitle {
-  opacity: 0.85;
   font-size: 0.9rem;
+  color: #64748b;
+  font-weight: 400;
 }
 
 .form-section-title {
@@ -74,11 +96,11 @@
   align-items: center;
   gap: 0.5rem;
   font-size: 1rem;
-  font-weight: 700;
-  color: var(--text);
+  font-weight: 600;
+  color: #0f766e;
   margin-bottom: 1rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--primary-light);
+  padding-bottom: 0;
+  border-bottom: none;
 }
 
 .form-section-title svg {
@@ -104,32 +126,34 @@
 }
 
 .form-field label {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: var(--text-secondary);
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .form-field input,
 .form-field textarea,
 .form-field select {
-  padding: 0.6rem 0.85rem;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 0.92rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 2.5rem;
+  font-size: 0.875rem;
   font-family: inherit;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), box-shadow var(--transition), background-color var(--transition);
   outline: none;
-  background: white;
-  color: var(--text);
+  background: #ffffff;
+  color: #1e293b;
 }
 
 .form-field input:focus,
 .form-field textarea:focus,
 .form-field select:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.12);
+  border-color: #0f766e;
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+  background: #ffffff;
 }
 
 .form-field input.filled,
@@ -158,16 +182,18 @@
   cursor: pointer;
 }
 
-/* Document content box */
+/* Document content box
+   En el visor va dentro de .form-section (ya es una card). No duplicar borde/fondo. */
 .document-content-box {
-  background: #fafbfc;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 1.5rem;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
   max-height: none;
   overflow-y: visible;
-  font-size: 0.9rem;
-  line-height: 1.7;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: #1e293b;
 }
 
 .document-content-box h1,
@@ -220,6 +246,471 @@
   margin-bottom: 0.3rem;
 }
 
+/* Consentimiento de anestesia: documento propio (tarjeta + franjas de sección), como versión anterior. */
+.anx-doc {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  letter-spacing: 0;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+  margin: 0;
+}
+.anx-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.anx-meta-grid > div {
+  border: 1px solid #d7e0ea;
+  background: #f8fafc;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+/* Campos de texto del consentimiento de anestesia (misma familia visual que el resto del visor) */
+.anx-doc input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+.anx-doc select,
+.anx-doc textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #1e293b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.625rem 0.875rem;
+  min-height: 2.625rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.anx-doc input:not([type="checkbox"]):not([type="radio"]):hover:not(:disabled),
+.anx-doc select:hover:not(:disabled),
+.anx-doc textarea:hover:not(:disabled) {
+  border-color: #94a3b8;
+}
+
+.anx-doc input:not([type="checkbox"]):not([type="radio"]):focus,
+.anx-doc select:focus,
+.anx-doc textarea:focus {
+  outline: none;
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.12);
+  background: #ffffff;
+}
+
+.anx-doc input[readonly]:not([type="checkbox"]),
+.anx-doc textarea[readonly] {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: #e2e8f0;
+}
+
+.anx-doc textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+
+.anx-doc select {
+  cursor: pointer;
+  appearance: auto;
+  background-image: none;
+}
+.anx-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 10px;
+  margin: 10px 0;
+}
+.anx-label {
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: #475569;
+  white-space: nowrap;
+}
+.anx-row input:not([type="checkbox"]) {
+  flex: 1 1 180px;
+  min-width: 120px;
+}
+.anx-row textarea {
+  flex: 1 1 180px;
+  min-width: 120px;
+}
+.anx-row.anx-row--field-top {
+  align-items: flex-start;
+}
+.anx-row .ax-full-line {
+  flex: 1 1 100%;
+  min-width: 0;
+}
+.anx-doc textarea.ax-full-line--multiline {
+  min-height: 4.25rem;
+  resize: vertical;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  line-height: 1.45;
+  font-family: inherit;
+}
+.anx-row .ax-mini {
+  flex: 0 0 120px;
+  min-width: 90px;
+}
+.anx-row-fecha input[name="ax_ciudad"] {
+  flex: 1 1 280px;
+}
+.anx-row-ident input[name="ax_nombre_otorga"] {
+  flex: 1 1 260px;
+}
+.anx-row-ident input[name="ax_doc_otorga"] {
+  flex: 1 1 220px;
+}
+.anx-checkline {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin: 2px 0 12px;
+}
+.anx-checkgroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+}
+.anx-row-representante {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+.anx-row-representante .anx-checkgroup {
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  margin-right: 0;
+}
+.anx-row-representante .anx-label {
+  margin-right: 2px;
+}
+.anx-inline-pair {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 260px;
+  min-width: 220px;
+}
+.anx-inline-pair input {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+.anx-row-representante .anx-checkgroup label {
+  gap: 3px;
+}
+.anx-row-representante .anx-checkgroup input[type="checkbox"] {
+  margin: 0;
+}
+.anx-checkgroup-wide {
+  grid-column: 2 / -1;
+  gap: 8px 14px;
+}
+.anx-checkline label,
+.anx-checkgroup label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  white-space: nowrap;
+  color: #1e293b;
+}
+.anx-checkline input[type="checkbox"],
+.anx-checkgroup input[type="checkbox"] {
+  appearance: auto;
+  -webkit-appearance: checkbox;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: #0f766e;
+}
+.anx-title {
+  margin: 0 0 0.35rem;
+  text-align: center;
+  color: #0f2a44;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+.anx-subtitle {
+  text-align: center;
+  margin: 0 0 1.25rem;
+  color: #64748b;
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+.anx-block-title {
+  margin: 1.25rem 0 0.75rem;
+  background: #0f766e;
+  color: #fff;
+  padding: 0.65rem 0.875rem;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 8px;
+  box-shadow: none;
+  letter-spacing: 0.02em;
+  border-bottom: none;
+}
+.anx-line-row { margin-bottom: 10px; }
+.anx-p { margin: 10px 0; line-height: 1.65; color: #1e293b; }
+.anx-doc .anx-p {
+  text-align: justify;
+}
+.anx-note {
+  margin: 4px 0 8px;
+  font-size: 11px;
+  color: #4b5563;
+  font-style: italic;
+}
+.anx-inline-checks {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  margin: 2px 0 4px;
+}
+.anx-inline-checks label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-weight: 500;
+  color: #111827;
+}
+.anx-inline-checks input[type="checkbox"] {
+  appearance: auto;
+  -webkit-appearance: checkbox;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  flex: 0 0 auto;
+  accent-color: #0f766e;
+}
+.anx-inline-checks .anx-label {
+  margin-right: 6px;
+  white-space: nowrap;
+}
+.anx-inline-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.anx-inline-check input[type="checkbox"] {
+  appearance: auto;
+  -webkit-appearance: checkbox;
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #0f766e;
+}
+.anx-decl-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0;
+  line-height: 1.45;
+}
+.anx-decl-item input[type="checkbox"] {
+  margin-top: 2px;
+  appearance: auto;
+  -webkit-appearance: checkbox;
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  accent-color: #0f766e;
+}
+.is-locked-field {
+  opacity: 0.78;
+  cursor: not-allowed;
+}
+.anx-doc input:disabled,
+.anx-doc textarea:disabled,
+.anx-doc select:disabled {
+  color: #64748b;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.anx-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.anx-table th,
+.anx-table td {
+  border: 1px solid #d2dbe6;
+  padding: 8px 10px;
+}
+.anx-table thead th {
+  background: #0f766e;
+  color: #fff;
+  font-weight: 700;
+}
+.anx-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+.anx-firmas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.anx-firmas-box {
+  border: 1px solid #d4dde7;
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.anx-firmas-top {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+.anx-firma-card {
+  border-right: 1px solid #d4dde7;
+  border-bottom: 1px solid #d4dde7;
+}
+.anx-firma-card:last-child {
+  border-right: 0;
+}
+.anx-firma-card-medico {
+  grid-column: 1 / -1;
+  border-right: 0;
+}
+.anx-firma-head {
+  background: #e8f5f4;
+  color: #0f766e;
+  font-weight: 700;
+  text-align: center;
+  padding: 7px 8px;
+}
+.anx-firma-body {
+  padding: 12px 12px 10px;
+  min-height: 132px;
+}
+/* Nombre bajo firma: mismo lenguaje de campo, más compacto */
+.anx-doc .anx-sign-line {
+  width: 100%;
+  min-height: 2rem;
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  padding: 0.4rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fafbfc;
+  font-family: inherit;
+  line-height: 1.45;
+}
+.anx-doc textarea.anx-sign-line--multiline {
+  display: block;
+  resize: vertical;
+  min-height: 4.25rem;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  field-sizing: content;
+}
+@supports not (field-sizing: content) {
+  .anx-doc textarea.anx-sign-line--multiline {
+    min-height: 5rem;
+  }
+}
+.anx-doc .anx-sign-line:focus {
+  background: #ffffff;
+}
+.anx-doc textarea.anx-sign-line--sync-only[readonly] {
+  resize: none;
+  cursor: default;
+  background: #f8fafc;
+  color: #334155;
+}
+.anx-doc textarea.anx-sign-line--sync-only[readonly]:focus {
+  background: #f8fafc;
+  box-shadow: none;
+}
+.anx-doc textarea.anx-sign-line--multiline.is-locked-field {
+  resize: none;
+  cursor: not-allowed;
+  background: #f1f5f9;
+  color: #475569;
+}
+.anx-firma-foot {
+  border-top: 1px solid #e2e8f0;
+  color: #0f766e;
+  font-weight: 600;
+  text-align: center;
+  padding: 6px 8px;
+}
+.ax-sign-slot-table {
+  min-height: 108px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #fafbfc;
+  margin-top: 0;
+}
+.signature-step-indicator {
+  margin: 2px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f766e;
+}
+.ax-sign-slot {
+  margin-top: 4px;
+  min-height: 104px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.anx-firma-card-medico .ax-sign-slot.ax-sign-slot-table {
+  min-height: 120px;
+}
+.ax-signature-img {
+  max-width: 100%;
+  max-height: 118px;
+  object-fit: contain;
+}
+.anx-firma-card-medico .ax-signature-img {
+  max-height: 148px;
+}
+@media (max-width: 900px) {
+  .anx-row { gap: 4px 8px; }
+  .anx-inline-pair { flex: 1 1 100%; min-width: 0; }
+  .anx-inline-pair input { min-width: 0; }
+  .anx-checkgroup-wide {
+    grid-column: auto;
+  }
+  .anx-row input,
+  .anx-row .ax-mini {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+  .anx-firmas-top {
+    grid-template-columns: 1fr;
+  }
+  .anx-firma-card {
+    border-right: 0;
+  }
+}
+
 /* Campos inline dentro del contenido del consentimiento */
 .form-inline-field {
   margin: 0.75rem 0;
@@ -228,32 +719,43 @@
   gap: 0.35rem;
 }
 
-.form-inline-field label {
-  font-weight: 600;
-  font-size: 0.85rem;
-  color: var(--text);
-}
-
 .form-inline-field input,
 .form-inline-field textarea,
 .form-inline-field select {
   width: 100%;
   padding: 0.6rem 0.75rem;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-size: 0.88rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  min-height: 2.5rem;
+  font-size: 0.875rem;
   font-family: inherit;
-  transition: border-color 0.2s;
-  background: #fff;
-  color: var(--text);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #ffffff;
+  color: #1e293b;
 }
 
 .form-inline-field input:focus,
 .form-inline-field textarea:focus,
 .form-inline-field select:focus {
   outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+  border-color: #0f766e;
+  box-shadow: 0 0 0 2px rgba(15, 118, 110, 0.15);
+  background: #ffffff;
+}
+
+.form-inline-field label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.form-field input::placeholder,
+.form-field textarea::placeholder,
+.form-inline-field input::placeholder,
+.form-inline-field textarea::placeholder,
+.anx-doc input::placeholder,
+.anx-doc textarea::placeholder {
+  color: #94a3b8;
 }
 
 /* Tabla de procedimientos */
@@ -293,37 +795,58 @@
 .form-checkbox {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.85rem 1rem;
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius-sm);
+  gap: 0.7rem;
+  padding: 0.8rem 0.95rem;
+  border: 1px solid #d9e2ec;
+  border-radius: 12px;
   cursor: pointer;
+  background: #ffffff;
   transition: all var(--transition);
 }
 
 .form-checkbox:hover {
-  border-color: var(--primary);
-  background: var(--primary-light);
+  border-color: #14b8a6;
+  background: #f0fdfa;
 }
 
 .form-checkbox:has(input:checked) {
-  border-color: var(--success);
-  background: var(--success-light);
+  border-color: #14b8a6;
+  background: #ecfeff;
 }
 
 .form-checkbox input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
   width: 20px;
   height: 20px;
   margin-top: 2px;
-  accent-color: var(--success);
+  border: 1.5px solid #cbd5e1;
+  border-radius: 7px;
+  background: #f8fafc;
   flex-shrink: 0;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.form-checkbox input[type="checkbox"]:checked {
+  border-color: #14b8a6;
+  background-color: #14b8a6;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' d='M4 10l4 4 8-9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 14px 14px;
+  box-shadow: 0 3px 8px rgba(20, 184, 166, 0.3);
+}
+
+.form-checkbox input[type="checkbox"]:focus-visible {
+  outline: 0;
+  box-shadow: 0 0 0 3px rgba(28, 199, 205, 0.2);
 }
 
 .form-checkbox span {
   font-size: 0.9rem;
-  line-height: 1.45;
-  color: var(--text);
+  line-height: 1.5;
+  color: #1e293b;
 }
 
 /* ===== No authorization checkbox & reason box ===== */
@@ -343,9 +866,13 @@
   box-shadow: 0 2px 8px rgba(217, 48, 37, 0.12);
 }
 .no-auth-checkbox input[type="checkbox"] {
-  accent-color: var(--danger);
   width: 22px;
   height: 22px;
+}
+.no-auth-checkbox input[type="checkbox"]:checked {
+  border-color: var(--danger);
+  background-color: var(--danger);
+  box-shadow: 0 3px 8px rgba(217, 48, 37, 0.32);
 }
 .no-auth-checkbox span {
   color: var(--danger) !important;
@@ -488,7 +1015,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  align-items: center;
+  width: 100%;
 }
 
 .signature-canvas-container label {
@@ -595,8 +1122,7 @@
   .signature-canvas-wrapper { padding: 0.35rem; }
   .signature-canvas-wrapper canvas {
     width: 100% !important;
-    max-width: 400px;
-    height: 140px !important;
+    height: auto !important;
   }
   .signed-banner { flex-direction: column; text-align: center; padding: 1rem; }
   .signed-banner-content { flex-direction: column; gap: 0.5rem; }
@@ -626,7 +1152,8 @@
   .form-field select { font-size: 0.88rem; padding: 0.55rem 0.75rem; }
   .document-content-box { padding: 0.75rem; font-size: 0.82rem; line-height: 1.6; }
   .signature-canvas-wrapper canvas {
-    height: 120px !important;
+    width: 100% !important;
+    height: auto !important;
   }
   .form-checkbox { padding: 0.6rem 0.75rem; }
   .form-checkbox span { font-size: 0.82rem; }

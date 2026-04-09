@@ -1,3 +1,7 @@
+/**
+ * @deprecated Los datos de pacientes viven en PostgreSQL (ver server/repositories/patientsRepo.js).
+ * Se mantiene el archivo por compatibilidad; la migración inicial usa data/patients.json si la BD está vacía.
+ */
 const fs = require('fs');
 const path = require('path');
 

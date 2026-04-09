@@ -1,25 +1,45 @@
 // =============================================================================
-// DATA: Lista maestra de consentimientos informados
+// DATA: Lista maestra de consentimientos informados (actualizada)
+// El contenido del formulario en pantalla sale de forms-es.js / plantillas JS.
+// "archivo" es solo referencia opcional; ya no se extrae texto desde PDF.
 // =============================================================================
 const consentimientos = [
-  { id: 1, numero: "1", titulo: "Consentimiento Informado Cirugía Bariátrica", archivo: "1. CONSENTIMIENTO INFORMADO CIRUGIA BARIATRICA.docx", tipo: "docx", categoria: "cirugia", codigo: "F-CX-CB-001", version: "1", vigente: "Abril 2020" },
-  { id: 2, numero: "2", titulo: "Consentimiento Informado de Cirugía Cardiovascular", archivo: "2. CONSENTIMIENTO INFORMADO DE CIRUGÍA CARDIOVASCULAR.pdf", tipo: "pdf", categoria: "cirugia", codigo: "F-CX-CCM-004", version: "1", vigente: "Abril 2025" },
-  { id: 3, numero: "3", titulo: "Consentimiento Informado para Acompañante de Casos Probable/Confirmado de COVID-19", archivo: "3. CONSENTIMIENTO INFORMADO PARA ACOMPAÑANTE DE CASOS PROBABLE CONFIRMADO DE COVID-19.pdf", tipo: "pdf", categoria: "covid", codigo: "F-GQ-129", version: "1", vigente: "Abril 2020" },
-  { id: 4, numero: "4", titulo: "Consentimiento Informado para la Administración de Componentes Sanguíneos", archivo: "4. CONSENTIMIENTO INFORMADO PARA LA ADMINISTRACION DE COMPONENTES SANGUINEOS.pdf", tipo: "pdf", categoria: "procedimientos", codigo: "FDX-029", version: "3", vigente: "Octubre 2023" },
-  { id: 5, numero: "5", titulo: "Consentimiento Informado para la Realización de Estudios de Investigación", archivo: "5. CONSENTIMIENTO INFORMADO PARA LA REALIZACION DE ESTUDIOS DE INVESTIGACIÓN.pdf", tipo: "pdf", categoria: "investigacion", codigo: "F-GQ-063", version: "0", vigente: "Agosto 2015" },
-  { id: 6, numero: "6", titulo: "Consentimiento Informado para Realización de Procedimientos Durante la Pandemia del Nuevo Coronavirus (COVID-19)", archivo: "6. CONSENTIMIENTO INFORMADO PARA REALIZACIÓN DE PROCEDIMIENTOS DURANTE LA PANDEMIA DEL NUEVO CORONAVIRUS (COVID-19).pdf", tipo: "pdf", categoria: "covid", codigo: "F-GQ-130", version: "1", vigente: "Abril 2020" },
-  { id: 7, numero: "7", titulo: "Consentimiento Informado para Realizar la Prueba de VIH", archivo: "7. CONSENTIMIENTO INFORMADO PARA REALIZAR LA PRUEBA DE VIH.pdf", tipo: "pdf", categoria: "procedimientos", codigo: "F-DX-058", version: "1", vigente: "Septiembre 2022" },
-  { id: 8, numero: "8", titulo: "Consentimiento Informado para Visita Domiciliaria", archivo: "8. CONSENTIMIENTO INFORMADO PARA VISITA DOMICILIARIA.docx", tipo: "docx", categoria: "general", codigo: "F-GQ-064", version: "1", vigente: "Abril 2020" },
-  { id: 9, numero: "9", titulo: "Consentimiento Informado Psicología", archivo: "9. CONSENTIMIENTO INFORMADO PSICOLOGIA.docx", tipo: "docx", categoria: "general", codigo: "F-GQ-065", version: "1", vigente: "Abril 2020" },
-  { id: 10, numero: "10", titulo: "Consentimiento Informado de Anestesia", archivo: "10. CONSENTIMIENTO INFORMADO DE ANESTESIA.pdf", tipo: "pdf", categoria: "anestesia", codigo: "F-GQ-129", version: "1", vigente: "Abril 2020" },
-  { id: 12, numero: "12", titulo: "Consentimiento Informado Médico", archivo: "12. CONSENTIMIENTO INFORMADO MÉDICO.docx", tipo: "docx", categoria: "general", codigo: "F-GQ-066", version: "1", vigente: "Abril 2020" },
-  { id: 13, numero: "13", titulo: "Consentimiento Informado de Fisioterapia", archivo: "13. CONSENTIMIENTO INFORMADO DE FISIOTERAPIA.docx", tipo: "docx", categoria: "general", codigo: "F-GQ-067", version: "1", vigente: "Abril 2020" },
-  { id: 14, numero: "14", titulo: "Consentimiento Informado para la Obtención de Imágenes con Contenido Clínico", archivo: "14. CONSENTIMIENTO INFORMADO PARA LA OBTENCION DE IMAGENES CON CONTENIDO CLINICO.doc", tipo: "doc", categoria: "procedimientos", codigo: "F-GQ-068", version: "1", vigente: "Abril 2020" },
-  { id: 16, numero: "16", titulo: "Consentimiento Informado de Enfermería", archivo: "16. CONSENTIMIENTO INFORMADO DE ENFERMERÍA.pdf", tipo: "pdf", categoria: "general", codigo: "F-GQ-069", version: "1", vigente: "Abril 2020" }
+  { id: 1, numero: "1", titulo: "Consentimiento Informado de Anestesia General", archivo: "CI-ANESTESIA GENERAL.pdf", tipo: "form", categoria: "anestesia", codigo: "N/A", version: "N/A", vigente: "N/A", formId: 10 },
+  { id: 2, numero: "2", titulo: "Consentimiento Informado Cirugía Bariátrica", archivo: "CI-BARIÁTRICA.pdf", tipo: "form", categoria: "cirugia", codigo: "N/A", version: "N/A", vigente: "N/A", formId: 1 },
+  { id: 3, numero: "3", titulo: "Consentimiento Informado de Cirugía Cardiovascular", archivo: "CI-CARDIOVASCULAR.pdf", tipo: "form", categoria: "cirugia", codigo: "N/A", version: "N/A", vigente: "N/A", formId: 2 },
+  { id: 4, numero: "4", titulo: "Consentimiento Informado Médico Circuncisión", archivo: "CONSENTIMIENTO INFORMADO MEDICO CIRCUNCISION.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 5, numero: "5", titulo: "Consentimiento Informado Médico Colecistectomía Laparoscópica", archivo: "CONSENTIMIENTO INFORMADO MEDICO COLECISTECTOMIA LAPAROSCOPICA.pdf", tipo: "form", categoria: "cirugia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 6, numero: "6", titulo: "Consentimiento Informado Médico Colonoscopia", archivo: "CONSENTIMIENTO INFORMADO MEDICO COLONOSCOPIA.pdf", tipo: "form", categoria: "gastroenterologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 7, numero: "7", titulo: "Consentimiento Informado Médico Endoscopia Digestiva Alta", archivo: "CONSENTIMIENTO INFORMADO MEDICO ENDOSCOPIA DIGESTIVA ALTA.pdf", tipo: "form", categoria: "gastroenterologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 8, numero: "8", titulo: "Consentimiento Informado Médico Extracción Extracapsular de Cristalino", archivo: "CONSENTIMIENTO INFORMADO MEDICO EXTRACCION EXTRACAPSULAR DE CRISTALINO.pdf", tipo: "form", categoria: "oftalmologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 9, numero: "9", titulo: "Consentimiento Informado Médico Herniorrafia Umbilical", archivo: "CONSENTIMIENTO INFORMADO MEDICO HERNIORRAFIA UMBILICAL.pdf", tipo: "form", categoria: "cirugia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 10, numero: "10", titulo: "Consentimiento Informado Médico Litotricia Extracorpórea", archivo: "CONSENTIMIENTO INFORMADO MEDICO LITOTRICIA EXTRACORPOREA.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 11, numero: "11", titulo: "Consentimiento Informado Médico Resección de Tumor de Piel o Tejidos Blandos", archivo: "CONSENTIMIENTO INFORMADO MEDICO RESECCION DE TUMOR BENIGNO O MALIGNO DE PIEL O TEJIDOS BLANDOS.pdf", tipo: "form", categoria: "cirugia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 12, numero: "12", titulo: "Consentimiento Informado Médico Turbinoplastia Transnasal", archivo: "CONSENTIMIENTO INFORMADO MEDICO TURBINOPLASTIA TRANSNASAL.pdf", tipo: "form", categoria: "otorrinolaringologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 13, numero: "13", titulo: "Consentimiento Informado Médico Ureterolitotomía Endoscópica", archivo: "CONSENTIMIENTO INFORMADO MEDICO URETEROLITOTOMIA ENDOSCOPICA.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 14, numero: "14", titulo: "Consentimiento Informado Médico Uretrocistoscopia", archivo: "CONSENTIMIENTO INFORMADO MEDICO URETROCISTOSCOPIA.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 15, numero: "15", titulo: "Consentimiento Informado Médico Varicocelectomía", archivo: "CONSENTIMIENTO INFORMADO MEDICO VARICOCELECTOMIA.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 16, numero: "16", titulo: "Consentimiento Informado Médico Vasectomía", archivo: "CONSENTIMIENTO INFORMADO MEDICO VASECTOMIA.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 17, numero: "17", titulo: "CI Urología Biopsia de Próstata", archivo: "CI-URO Biopsia Próstata.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 18, numero: "18", titulo: "CI Urología Biopsia de Riñón", archivo: "CI-URO Biopsia Riñón.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 19, numero: "19", titulo: "CI Urología Cistoscopia de Coágulos", archivo: "CI-URO Cistoscopia Coágulos.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 20, numero: "20", titulo: "CI Urología Cistoscopia Diagnóstica", archivo: "CI-URO Cistoscopia Diagnóst_.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 21, numero: "21", titulo: "CI Urología Cistouretropexia", archivo: "CI-URO Cistouretropexia.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 22, numero: "22", titulo: "CI Urología Hidrocelectomía", archivo: "CI-URO Hidrocelectomía.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 23, numero: "23", titulo: "CI Urología Nefrolitotomía Percutánea", archivo: "CI-URO Nefrolitotomía Perc_.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 24, numero: "24", titulo: "CI Urología Prostatectomía Laparoscópica", archivo: "CI-URO Prostatectomía Lapar_.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 25, numero: "25", titulo: "CI Urología RTUP", archivo: "CI-URO RTUP.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 26, numero: "26", titulo: "CI Urología Ureteroscopia con DJ", archivo: "CI-URO Ureteroscopia-DJ.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" },
+  { id: 27, numero: "27", titulo: "CI Urología Uretrotomía Interna", archivo: "CI-URO Uretrotomía Interna.pdf", tipo: "form", categoria: "urologia", codigo: "N/A", version: "N/A", vigente: "N/A" }
 ];
 
 function getConsentById(id) {
   return consentimientos.find(c => c.id === parseInt(id));
+}
+
+function getConsentFormId(consent) {
+  if (!consent) return null;
+  return consent.formId || consent.id;
 }
 
 // Estado global del idioma y contexto del visor
