@@ -45,36 +45,146 @@ const FORMULARIOS = {
 2: {
   titulo: "Consentimiento Informado - Cirugía Cardiovascular",
   contenido: `
-    <p>Declaro que he sido informado por el médico de la Clínica Medihelp Services acerca de mi enfermedad y sobre el tratamiento médico quirúrgico, entendiendo que requiere:</p>
-    <h4>Descripción quirúrgica completa:</h4>
-    <p><strong>Anestesia general</strong>, apertura del tórax para visualizar adecuadamente órganos como el corazón, las arterias y los pulmones. En algunas ocasiones es necesario detener y/o abrir el corazón mientras se reparan los defectos. Mientras el corazón está detenido, se utilizan medidas de protección y es necesario que la sangre circule por un equipo externo al cuerpo (máquina de circulación extracorpórea), el cual requiere anticoagulación temporal.</p>
-    <h4>Efectos indeseables y riesgos (con porcentajes reportados):</h4>
-    <ol>
-      <li>Hemorragia que prolongue la intervención o que obligue a reoperar (3.9–6.8%)</li>
-      <li>Reacciones de hipersensibilidad o alergia a sangre o medicamentos (1–3%)</li>
-      <li>Riesgo de transmisión de enfermedades infectocontagiosas por transfusión sanguínea (1–1.6%)</li>
-      <li>Accidente vascular cerebral — embolia o hemorragia (1.1–1.4%)</li>
-      <li>Incapacidad del corazón para mantener la circulación, shock cardiogénico (2.4–12%)</li>
-      <li>Necesidad de asistir al corazón con dispositivos mecánicos (0.2–0.6%)</li>
-      <li>Paro cardiocirculatorio en el postoperatorio (0.7–2.9%)</li>
-      <li>Isquemia o infarto de miocardio perioperatorio (1%)</li>
-      <li>Bloqueo auriculoventricular con necesidad de marcapasos definitivo (0.9%)</li>
-      <li>Arritmias (30–50%)</li>
-      <li>Síndrome de dificultad respiratoria aguda, ventilación prolongada (6–11.9%)</li>
-      <li>Insuficiencia renal aguda que pueda requerir diálisis (1.7%)</li>
-      <li>Infección profunda de tórax o de la herida (3.9–6.8%)</li>
-      <li>Úlcera gástrica o duodenal y hemorragia digestiva (1.6%)</li>
-      <li>Formación de trombos venosos con riesgo de embolia pulmonar (0.2%)</li>
-      <li>Cicatrices hipertróficas o queloideas</li>
-      <li>Necesidad de reintervención en algunos casos de urgencia (2.1%)</li>
-      <li>Riesgos propios de la anestesia</li>
-      <li>Muerte según EuroScore</li>
-    </ol>
-    <p>Se me ha informado sobre el manejo del dolor postoperatorio. El éxito del procedimiento depende de los hallazgos quirúrgicos y de la condición clínica previa del paciente.</p>
-    <div class="form-inline-field"><label>Riesgos adicionales específicos del paciente:</label><textarea name="ci_riesgos_adicionales" rows="2" placeholder="Riesgos adicionales específicos..."></textarea></div>
-    <div class="form-inline-field"><label>Alternativas al procedimiento:</label><textarea name="ci_alternativas" rows="2" placeholder="Alternativas de tratamiento..."></textarea></div>
-    <div class="form-inline-field"><label>Cirujanos autorizados:</label><input type="text" name="ci_cirujanos" placeholder="Nombres de los cirujanos"></div>
-    <div class="form-inline-field"><label>Tipo de válvula (si aplica):</label><input type="text" name="ci_tipo_valvula" placeholder="Ej: válvula mecánica, biológica..."></div>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>El procedimiento consiste en cirugía del corazón realizada bajo anestesia general. Se abre el tórax para acceder al corazón y los grandes vasos.</p>
+    <p>Según el diagnóstico y la indicación médica, el procedimiento puede corresponder a:</p>
+    <ul>
+      <li><strong>Revascularización miocárdica (bypass coronario):</strong> se utilizan injertos de arteria o vena para crear nuevos puentes de circulación que sortean las arterias coronarias obstruidas, con o sin detención del corazón.</li>
+      <li><strong>Cirugía valvular:</strong> reparación o reemplazo de una o más válvulas del corazón mediante válvula mecánica, biológica o reparación del tejido propio.</li>
+      <li><strong>Cirugía de la aorta:</strong> corrección de aneurisma, disección u otras patologías de la aorta ascendente o el arco aórtico.</li>
+    </ul>
+    <div class="form-inline-field">
+      <label>El tipo de válvula utilizada será:</label>
+      <select name="cv_tipo_valvula">
+        <option value="">Seleccionar...</option>
+        <option value="mecanica">Mecánica</option>
+        <option value="biologica">Biológica</option>
+      </select>
+    </div>
+    <div class="form-inline-field"><label>Reparación del tejido nativo (especificar):</label><input type="text" name="cv_reparacion_tejido_nativo" placeholder="Detalle de la reparación"></div>
+    <p>En algunos casos se requiere el uso de circulación extracorpórea (máquina corazón-pulmón) durante la intervención.</p>
+    <div class="form-inline-field"><label>El procedimiento específico indicado para este paciente es:</label><input type="text" name="cv_procedimiento_especifico" placeholder="Procedimiento específico" required></div>
+    <div class="form-inline-field"><label>EuroSCORE II estimado para este paciente:</label><input type="number" name="cv_euroscore_ii" min="0" max="100" step="0.01" placeholder="Ej: 3.50"> <span>%</span></div>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Hemorragia que prolongue la cirugía o que requiera reoperación o transfusión de hemoderivados</td><td>3.9-6.8%</td></tr>
+        <tr><td>Reacciones de hipersensibilidad o alergia a sangre o medicamentos</td><td>1-3%</td></tr>
+        <tr><td>Riesgo de transmisión de enfermedades infecto-contagiosas por transfusión (ventana inmunológica)</td><td>1-1.6%</td></tr>
+        <tr><td>Accidente cerebrovascular (embolia o hemorragia): parálisis, convulsiones, coma</td><td>1.1-1.4%</td></tr>
+        <tr><td>Incapacidad del corazón para mantener la circulación: bajo gasto cardíaco / choque cardiogénico</td><td>2.4-12%</td></tr>
+        <tr><td>Necesidad de asistencia mecánica del corazón (balón de contrapulsación intraaórtico, asistencia ventricular)</td><td>0.2-0.6%</td></tr>
+        <tr><td>Paro cardiorrespiratorio en el postoperatorio</td><td>0.7-2.9%</td></tr>
+        <tr><td>Lesión isquémica o infarto del músculo cardíaco durante el perioperatorio</td><td>1%</td></tr>
+        <tr><td>Bloqueo auriculoventricular con necesidad de marcapasos definitivo</td><td>0.9%</td></tr>
+        <tr><td>Arritmias cardíacas (fibrilación auricular y otras)</td><td>30-50%</td></tr>
+        <tr><td>Síndrome de dificultad respiratoria aguda o necesidad de ventilación mecánica prolongada</td><td>6-11.9%</td></tr>
+        <tr><td>Insuficiencia renal aguda que en ocasiones requiera inicio de diálisis</td><td>1.7%</td></tr>
+        <tr><td>Infección profunda del tórax (mediastinitis), de la herida superficial o del implante</td><td>3.9-6.8%</td></tr>
+        <tr><td>Úlcera o hemorragia digestiva</td><td>1.6%</td></tr>
+        <tr><td>Formación de trombos venosos con riesgo de embolia pulmonar</td><td>0.2%</td></tr>
+        <tr><td>Cicatrices hipertróficas o queloideas</td><td>Variable</td></tr>
+        <tr><td>Necesidad de reintervención quirúrgica</td><td>2.1%</td></tr>
+        <tr><td>Riesgos propios de la anestesia general (ver consentimiento de anestesia)</td><td>Ver consentimiento de anestesia</td></tr>
+        <tr><td>Muerte: estimada individualmente según el cálculo de riesgo del paciente</td><td>Individualizado</td></tr>
+      </tbody>
+    </table>
+    <div class="form-inline-field"><label>Riesgo de muerte individualizado:</label><input type="number" name="cv_riesgo_muerte_individualizado" min="0" max="100" step="0.01" placeholder="Ej: 2.35"> <span>%</span></div>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud individuales:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="cv_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="cv_alt_tratamiento_medico"> Tratamiento médico / farmacológico (control de síntomas, sin cirugía)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="cv_alt_cateterismo"> Cateterismo cardíaco intervencionista (angioplastia coronaria o valvuloplastia, según indicación)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="cv_alt_no_realizar"> No realizar ningún procedimiento (decisión informada y documentada)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="cv_alt_otra"> Otra:</label>
+      <input type="text" name="cv_alt_otra_detalle" class="ax-full-line" placeholder="Describa otra alternativa">
+    </div>
+
+    <div class="anx-block-title">8. RECUPERACIÓN Y MANEJO DEL DOLOR</div>
+    <p class="anx-p">Me han informado que después del procedimiento estaré en la Unidad de Cuidados Intensivos para recuperación. Podré presentar dolor en la herida y el tórax, el cual será manejado con medicamentos analgésicos. La probabilidad de éxito del procedimiento depende de las condiciones individuales de cada paciente. Se me indicarán los cuidados y restricciones específicas para el período de recuperación.</p>
+
+    <div class="anx-block-title">9. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento - o me ha sido leído en caso de no poder hacerlo por mí mismo(a) - y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="cvSection10Title">10. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="cvDissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="cv_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="cv_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="cv_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="cv_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="cv_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
@@ -104,164 +214,681 @@ const FORMULARIOS = {
   `
 },
 
-// ─── 4. COMPONENTES SANGUÍNEOS ──────────────────────────────────────
+// ─── 4. CIRCUNCIÓN ─────────────────────────────────────────────────
 4: {
-  titulo: "Consentimiento Informado - Administración de Componentes Sanguíneos",
+  titulo: "Consentimiento Informado Médico Circuncisión",
   contenido: `
-    <p>Este documento tiene como finalidad informarlo para que usted o quien lo represente pueda consentir o rechazar la administración de componentes sanguíneos en la Clínica Medihelp Services.</p>
-    <p>Declaro que he sido informado que puedo necesitar la administración de uno o varios componentes sanguíneos ahora o en el futuro, con el objetivo de restablecer mi salud y preservar la vida:</p>
-    <h4>Componentes sanguíneos:</h4>
-    <ul>
-      <li><strong>Glóbulos rojos</strong> — transportan el oxígeno a los tejidos</li>
-      <li><strong>Plaquetas</strong> — participan en la coagulación de la sangre</li>
-      <li><strong>Plasma</strong> — contiene factores que ayudan a la coagulación sanguínea</li>
-      <li><strong>Crioprecipitado</strong> — contiene factores específicos de coagulación</li>
-      <li><strong>Sangre total</strong> — contiene todas las propiedades anteriores</li>
-    </ul>
-    <p>Manifiesto entender que el origen de los componentes sanguíneos puede ser de un donante o de mi propia sangre recolectada con anterioridad, examinada y revisada para detectar la presencia de agentes infecciosos.</p>
-    <h4>Alternativas evaluadas:</h4>
-    <p>Antes de proponer este procedimiento, el equipo tratante evaluó otras opciones terapéuticas como: autotransfusión, terapia con hierro y vitaminas, infusión de expansores de volumen, medicamentos (eritropoyetina, ácido tranexámico), uso de cell salvage (recuperación de sangre), entre otros.</p>
-    <h4>Pruebas pre-transfusión:</h4>
-    <p>Se realizarán pruebas de tipificación ABO/RH y pruebas de compatibilidad. El monitoreo no elimina totalmente el riesgo de transmisión de enfermedades.</p>
-    <h4>Reacciones adversas posibles:</h4>
-    <ul>
-      <li>Fiebre con o sin escalofrío</li>
-      <li>Alteración de la función renal</li>
-      <li>Dificultad respiratoria</li>
-      <li>Modificación de la tensión arterial</li>
-      <li>Transmisión de infecciones</li>
-      <li>Alteraciones cutáneas (prurito, urticaria, edema)</li>
-      <li>Cambio del color de la orina</li>
-    </ul>
-    <p><em>No existe garantía absoluta del beneficio de la transfusión.</em></p>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La circuncisión es el procedimiento quirúrgico en el que se extirpa el prepucio (piel que cubre el glande del pene). Se realiza bajo anestesia (local, regional o general según la edad y condición del paciente). Está indicada en casos de fimosis (imposibilidad de retraer el prepucio), parafimosis de repetición, balanopostitis crónica o por indicación médica documentada.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Sangrado de la herida quirúrgica</td><td>Poco frecuente</td></tr>
+        <tr><td>Infección de la herida</td><td>Poco frecuente</td></tr>
+        <tr><td>Hematoma en el sitio quirúrgico</td><td>Poco frecuente</td></tr>
+        <tr><td>Resultado estético insatisfactorio (retiro insuficiente o excesivo del prepucio)</td><td>Variable</td></tr>
+        <tr><td>Dolor crónico en la zona intervenida</td><td>Raro</td></tr>
+        <tr><td>Hipersensibilidad del glande y pérdida de cobertura (transitoria)</td><td>Frecuente</td></tr>
+        <tr><td>Dehiscencia de suturas (apertura de la herida)</td><td>Raro</td></tr>
+        <tr><td>Cicatriz queloidea o hipertrófica</td><td>Variable según predisposición</td></tr>
+        <tr><td>Lesión del glande o del meato uretral</td><td>Muy raro</td></tr>
+        <tr><td>Necesidad de reintervención quirúrgica</td><td>Raro</td></tr>
+        <tr><td>Riesgos propios de la anestesia utilizada</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud individuales:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci4_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci4_alt_no_cirugia"> No realizar cirugía / manejo médico conservador con corticoides tópicos (fimosis leve a moderada)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci4_alt_prepucioplastia"> Prepucioplastia (ampliación del anillo sin resección completa del prepucio)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci4_alt_otra"> Otra:</label>
+      <input type="text" name="ci4_alt_otra_detalle" class="ax-full-line" placeholder="Describa otra alternativa">
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento - o me ha sido leído en caso de no poder hacerlo por mí mismo(a) - y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="ci4_declara_autoriza_dr" required> Autorizo expresamente al Dr. Gabriel de León Matos — Urólogo — C.C. 15.029.675 para que, con el apoyo del equipo médico y de anestesiología de la Clínica Medihelp Services, realice el procedimiento descrito, así como cualquier otro procedimiento que a su juicio resulte necesario o urgente durante la intervención para preservar mi salud y seguridad.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci4SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci4DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci4_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci4_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci4_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci4_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci4_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
-// ─── 5. ESTUDIOS DE INVESTIGACIÓN ───────────────────────────────────
+// ─── 5. COLECISTECTOMÍA LAPAROSCÓPICA ───────────────────────────────
 5: {
-  titulo: "Consentimiento Informado - Realización de Estudios de Investigación",
+  titulo: "Consentimiento Informado Médico Colecistectomía Laparoscópica",
   contenido: `
-    <p>Mediante el presente documento certifico mi consentimiento para participar en un estudio de investigación en la Clínica Medihelp Services.</p>
-    <div class="form-inline-field"><label>Nombre del estudio:</label><input type="text" name="ci_nombre_estudio" placeholder="Nombre del estudio" required></div>
-    <div class="form-inline-field"><label>Investigador principal:</label><input type="text" name="ci_investigador" placeholder="Nombre del investigador" required></div>
-    <div class="form-inline-field"><label>Institución u organización:</label><input type="text" name="ci_institucion_inv" placeholder="Nombre de la institución"></div>
-    <h4>Información que debe incluir el estudio (basada en recomendaciones OMS):</h4>
-    <ul>
-      <li>Introducción y propósito del estudio</li>
-      <li>Tipo de intervención y selección de participantes</li>
-      <li>Condiciones de participación voluntaria</li>
-      <li>Procedimientos, protocolos y duración</li>
-      <li>Efectos secundarios, riesgos y molestias</li>
-      <li>Posibles beneficios e incentivos</li>
-      <li>Confidencialidad de los datos</li>
-      <li>Derecho a rechazar o retirarse en cualquier momento</li>
-      <li>Alternativas de tratamiento disponibles</li>
-    </ul>
-    <div class="form-inline-field"><label>Información detallada del estudio:</label><textarea name="ci_info_estudio" rows="6" placeholder="Introducción, propósito, intervención, procedimientos, duración, efectos secundarios, riesgos, beneficios, confidencialidad, alternativas..." required></textarea></div>
-    <p>Esta propuesta ha sido revisada y aprobada por el Comité de Ética de la Clínica Medihelp. He leído la información proporcionada o me ha sido leída. He tenido la oportunidad de preguntar sobre ella y se me ha contestado satisfactoriamente.</p>
-    <p><strong>Consiento voluntariamente participar</strong> en esta investigación y entiendo que tengo el derecho a retirarme en cualquier momento sin que me afecte mi cuidado médico. Se me proporcionará una copia de este consentimiento.</p>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La colecistectomía laparoscópica es la extirpación de la vesícula biliar mediante cirugía mínimamente invasiva. A través de 3 o 4 pequeñas incisiones en el abdomen se introduce el instrumental y una cámara para visualizar y extirpar la vesícula enferma (generalmente por cálculos biliares, inflamación o pólipos). En algunos casos, por razones de seguridad, puede ser necesario convertir la cirugía a técnica abierta. Se realiza bajo anestesia general.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>• Infección o sangrado de la herida quirúrgica</td><td>2–5%</td></tr>
+        <tr><td>• Trastornos digestivos temporales (distensión, diarrea, dispepsia)</td><td>Frecuente, transitorio</td></tr>
+        <tr><td>• Dolor referido al hombro por irritación del diafragma (gas de la laparoscopia)</td><td>Frecuente, autolimitado</td></tr>
+        <tr><td>• Estrechez o lesión de la vía biliar (complicación grave)</td><td>&lt;1%</td></tr>
+        <tr><td>• Escape de bilis o fístula biliar</td><td>&lt;1%</td></tr>
+        <tr><td>• Sangrado o infección intraabdominal</td><td>Raro, &lt;0.5%</td></tr>
+        <tr><td>• Lesión de órganos vecinos (intestino, vasos, hígado) con posible conversión a cirugía abierta</td><td>Muy raro, &lt;0.3%</td></tr>
+        <tr><td>• Hernia en el sitio de las incisiones</td><td>Poco frecuente</td></tr>
+        <tr><td>• Pancreatitis si se realiza exploración de la vía biliar</td><td>Raro</td></tr>
+        <tr><td>• Riesgos propios de la anestesia general</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud, antecedentes quirúrgicos, anatomía o comorbilidades:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci5_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci5_alt_conservador"> Manejo médico conservador (dieta, analgesia) — solo en pacientes de muy alto riesgo quirúrgico</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci5_alt_drenaje"> Drenaje percutáneo de la vesícula (sin extirpación, en casos críticos)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci5_alt_abierta"> Colecistectomía a cielo abierto (si hay contraindicación para laparoscopia)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci5_alt_no_cirugia"> No cirugía (con documentación de los riesgos)</label>
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento — o me ha sido leído en caso de no poder hacerlo por mí mismo(a) — y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci5SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci5DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci5_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci5_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci5_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci5_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci5_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
-// ─── 6. PROCEDIMIENTOS DURANTE PANDEMIA COVID-19 ────────────────────
+// ─── 6. COLONOSCOPIA ────────────────────────────────────────────────
 6: {
-  titulo: "Consentimiento Informado - Procedimientos Durante la Pandemia COVID-19",
+  titulo: "Consentimiento Informado Médico Colonoscopia",
   contenido: `
-    <h4>Información sobre COVID-19</h4>
-    <p>La Clínica Medihelp Services presta sus servicios de salud basados en un modelo de atención con calidad, seguridad y cuidado humanizado. Actualmente cursa una pandemia por el nuevo coronavirus (SARS-CoV-2). La COVID-19 es la enfermedad infecciosa causada por dicho coronavirus.</p>
-    <p><strong>Síntomas más frecuentes:</strong> fiebre, tos, disnea, mialgias, fatiga, diarrea y alteración del olfato y el gusto.</p>
-    <p><strong>Distribución de severidad:</strong> La mayoría de los casos (81%) tienen enfermedad leve; el 14% requieren oxigenoterapia y el 5% ameritan cuidado intensivo. Aproximadamente 8 de cada 10 personas se recuperan sin necesidad de tratamiento especial. Una de cada 6 personas desarrolla una enfermedad grave.</p>
-    <h4>Mortalidad según condición previa:</h4>
-    <ul>
-      <li>Cáncer: 5.6%</li>
-      <li>Hipertensión: 6%</li>
-      <li>Enfermedad respiratoria crónica: 6.3%</li>
-      <li>Diabetes mellitus: 7.3%</li>
-      <li>Enfermedad cardiovascular: 10.5%</li>
-    </ul>
-    <div class="form-inline-field"><label>Procedimiento a realizar:</label><input type="text" name="ci_procedimiento_covid" placeholder="Nombre del procedimiento" required></div>
-    <h4>Riesgo en ambiente hospitalario:</h4>
-    <p>Al estar en un ambiente hospitalario es posible que durante su estancia se puedan desarrollar síntomas de la enfermedad, pues usted pudo haber ingresado como portador asintomático o puede contagiarse del coronavirus durante la estadía.</p>
-    <h4>Posibles complicaciones en caso de contagio:</h4>
-    <ul>
-      <li>Necesidad de hospitalización con oxígeno</li>
-      <li>Aislamiento</li>
-      <li>Uso de antibióticos</li>
-      <li>Traslado a UCI</li>
-      <li>Intubación y soporte ventilatorio</li>
-      <li>Uso de soporte con pulmón artificial (ECMO)</li>
-      <li>Muerte</li>
-    </ul>
-    <p><em>La atención quirúrgica no se recomienda para procedimientos electivos durante la pandemia salvo indicación médica.</em> Debo seguir las medidas de higiene indicadas por la institución.</p>
-    <p><strong>Confirmo que no estoy presentando ningún síntoma</strong> mencionado, no he estado en contacto con personas portadoras del virus ni he viajado a otros países en los últimos 14 días.</p>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La colonoscopia es un procedimiento endoscópico en el que se introduce un tubo flexible con cámara a través del ano para visualizar el interior del intestino grueso (colon) y el recto. Está indicada para el estudio de sangrado rectal, alteraciones del hábito intestinal, anemia, sospecha de pólipos o tumores, enfermedad inflamatoria intestinal y detección temprana de cáncer de colon. Durante el mismo procedimiento se pueden tomar biopsias y extirpar pólipos. Se realiza bajo sedación o anestesia.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>• Perforación del colon o recto (complicación grave, puede requerir cirugía)</td><td>0.05–0.1%</td></tr>
+        <tr><td>• Sangrado después de extirpar un pólipo o tomar una biopsia</td><td>0.1–0.5%</td></tr>
+        <tr><td>• Infección o peritonitis (si hay perforación)</td><td>Raro</td></tr>
+        <tr><td>• Distensión abdominal y dolor por el gas introducido durante el procedimiento</td><td>Frecuente, transitorio</td></tr>
+        <tr><td>• Reacciones adversas a la sedación (baja presión arterial, disminución respiratoria)</td><td>Poco frecuente</td></tr>
+        <tr><td>• Fiebre y dolor abdominal sin perforación después de extirpar un pólipo</td><td>Raro, &lt;1%</td></tr>
+        <tr><td>• Preparación intestinal incompleta que requiera repetir el procedimiento</td><td>5–10%</td></tr>
+        <tr><td>• Baja en el oxígeno de la sangre durante la sedación</td><td>Poco frecuente</td></tr>
+        <tr><td>• Riesgos propios de la sedación o anestesia</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud, edad, medicamentos, antecedentes quirúrgicos o cardiovasculares:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci6_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci6_alt_flexible_recto_colon_izquierdo"> Endoscopia flexible del recto y colon izquierdo (solo evalúa la parte final del colon)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci6_alt_tomografia_colon"> Tomografía de colon (solo diagnóstico, sin posibilidad de tomar biopsias)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci6_alt_capsula_colon"> Cápsula endoscópica de colon</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci6_alt_no_realizar"> No realizar el procedimiento (con documentación)</label>
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento — o me ha sido leído en caso de no poder hacerlo por mí mismo(a) — y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci6SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci6DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci6_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci6_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci6_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci6_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci6_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
-// ─── 7. PRUEBA DE VIH ──────────────────────────────────────────────
+// ─── 7. ENDOSCOPIA DIGESTIVA ALTA ───────────────────────────────────
 7: {
-  titulo: "Consentimiento Informado - Prueba de VIH",
+  titulo: "Consentimiento Informado Médico Endoscopia Digestiva Alta",
   contenido: `
-    <p>Autorizo al laboratorio de la Clínica Medihelp Services para que me realice la prueba del VIH. Este documento se diligencia con el fin de brindar consejería sobre la realización de la prueba para detectar el virus de la inmunodeficiencia humana (VIH) y dar cumplimiento al Decreto 1543 de 1997 del Ministerio de la Protección Social.</p>
-    <h4>Propósito y beneficio de la prueba</h4>
-    <p>Se me realizará una prueba presuntiva de VIH para determinar si estoy infectado o no con el Virus de Inmunodeficiencia Humana.</p>
-    <h4>Interpretación de resultados:</h4>
-    <ul>
-      <li><strong>Reactivo:</strong> Se han detectado anticuerpos contra el VIH. Se requiere una segunda prueba de confirmación.</li>
-      <li><strong>No reactivo (negativo):</strong> No hay evidencia de infección al momento de la prueba.</li>
-      <li><strong>Indeterminado:</strong> No hay certeza de infección real. Se requiere repetir la prueba en un mes.</li>
-    </ul>
-    <h4>Limitaciones:</h4>
-    <ul>
-      <li>Posibilidad de <strong>falsos positivos</strong></li>
-      <li>Posibilidad de <strong>falsos negativos</strong> durante el período de ventana inmunológica</li>
-    </ul>
-    <h4>Riesgos emocionales:</h4>
-    <p>Enfrentarse a una fuerte reacción emocional, incluyendo ansiedad y depresión. También puedo ser objeto de discriminación o rechazo. Se recomienda buscar apoyo y asesoría post-prueba.</p>
-    <p><strong>Confidencialidad:</strong> Todo profesional del equipo de salud está en la obligación de mantener la confidencialidad sobre mi diagnóstico. Todos los profesionales de la salud deben mantener el secreto profesional.</p>
-    <p>He recibido consejería pre-prueba, comprendo la naturaleza voluntaria de la prueba y puedo retirar mi consentimiento antes de la toma de la muestra. He sido informado sobre las protecciones de confidencialidad y las medidas de prevención.</p>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La endoscopia digestiva alta es un procedimiento en el que se introduce un tubo flexible con cámara por la boca para visualizar el esófago, el estómago y la primera parte del intestino delgado (duodeno). Está indicada para el estudio de dolor abdominal alto, acidez, dificultad para tragar, sangrado digestivo alto, sospecha de úlcera, gastritis, reflujo o tumor. Permite también tomar biopsias y realizar procedimientos de tratamiento. Se realiza bajo sedación o anestesia local de garganta.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>• Perforación del esófago, estómago o duodeno (complicación grave)</td><td>&lt;0.05%</td></tr>
+        <tr><td>• Sangrado después de tomar una biopsia o realizar un tratamiento</td><td>&lt;0.5%</td></tr>
+        <tr><td>• Aspiración de contenido gástrico a las vías respiratorias</td><td>Raro</td></tr>
+        <tr><td>• Dolor de garganta o molestia al tragar después del procedimiento</td><td>Frecuente, transitorio</td></tr>
+        <tr><td>• Distensión abdominal por el gas introducido</td><td>Frecuente, transitorio</td></tr>
+        <tr><td>• Reacciones adversas a la sedación (baja presión arterial, disminución respiratoria)</td><td>Poco frecuente</td></tr>
+        <tr><td>• Espasmo de las cuerdas vocales</td><td>Raro</td></tr>
+        <tr><td>• Paso transitorio de bacterias a la sangre</td><td>Muy raro</td></tr>
+        <tr><td>• Riesgos propios de la sedación o anestesia</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud, edad, medicamentos, antecedentes quirúrgicos o cardiovasculares:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci7_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci7_alt_estudio_radiologico_contraste"> Estudio radiológico con medio de contraste del tubo digestivo alto</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci7_alt_capsula_endoscopica"> Cápsula endoscópica</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci7_alt_manejo_medico_empirico"> Manejo médico empírico sin endoscopia (en casos de bajo riesgo)</label>
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento — o me ha sido leído en caso de no poder hacerlo por mí mismo(a) — y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci7SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci7DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci7_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci7_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci7_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci7_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci7_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
-// ─── 8. VISITA DOMICILIARIA ─────────────────────────────────────────
+// ─── 8. EXTRACCIÓN EXTRACAPSULAR DE CRISTALINO (CATARATA) ───────────
 8: {
-  titulo: "Consentimiento Informado - Visita Domiciliaria",
+  titulo: "Consentimiento Informado Médico Extracción Extracapsular de Cristalino",
   contenido: `
-    <p>En cumplimiento de la normatividad vigente en materia de seguridad y salud en el trabajo, y en el marco del Sistema de Gestión de Seguridad y Salud en el Trabajo (SG-SST), la Clínica Medihelp Services y/o la empresa han desarrollado Programas de Vigilancia Epidemiológica (PVE), conforme a:</p>
-    <ul>
-      <li><strong>Resolución 0312 de 2019</strong> — artículos 5, 8 y 10, sobre los estándares mínimos del SG-SST.</li>
-      <li><strong>Decreto 1072 de 2015</strong> — reglamenta el SG-SST y contempla actividades preventivas.</li>
-    </ul>
-    <div class="form-inline-field"><label>Cargo o posición:</label><input type="text" name="ci_cargo" placeholder="Cargo del trabajador"></div>
-    <div class="form-inline-field"><label>Programa de vigilancia:</label><input type="text" name="ci_programa" placeholder="Nombre del programa"></div>
-    <div class="form-inline-field"><label>Empresa o empleador:</label><input type="text" name="ci_empresa" placeholder="Nombre de la empresa"></div>
-    <h4>Propósito de la visita:</h4>
-    <ul>
-      <li>Hacer seguimiento a las condiciones de salud del trabajador.</li>
-      <li>Verificar el cumplimiento de recomendaciones y restricciones médicas.</li>
-      <li>Identificar factores psicosociales, ambientales o familiares que influyan en la rehabilitación.</li>
-      <li>Brindar orientación en medidas de autocuidado y hábitos saludables.</li>
-    </ul>
-    <h4>Alcance:</h4>
-    <p>La visita será realizada en la residencia informada por el colaborador. Tendrá carácter <strong>preventivo, educativo, asistencial y estrictamente confidencial</strong>. No tiene fines disciplinarios ni coercitivos.</p>
-    <h4>Confidencialidad:</h4>
-    <p>La información será tratada conforme a la Ley 1581 de 2012 (Protección de Datos Personales), Ley 23 de 1981 (Ética Médica) y Resolución 1995 de 1999 (Historia Clínica).</p>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La cirugía de catarata consiste en retirar el cristalino del ojo cuando se ha opacado (catarata) y reemplazarlo por un lente artificial para restaurar la visión. Mediante una pequeña incisión en la córnea, se fragmenta y aspira el cristalino opaco con ultrasonido y se implanta el lente artificial en su lugar. Se realiza bajo anestesia local (gotas o inyección alrededor del ojo) con o sin sedación leve.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>• Rotura de la membrana posterior del cristalino con posible caída de fragmentos al interior del ojo</td><td>1–3%</td></tr>
+        <tr><td>• Infección grave del ojo (endoftalmitis) que puede causar pérdida de visión</td><td>&lt;0.1%</td></tr>
+        <tr><td>• Hinchazón de la córnea transitoria o permanente</td><td>&lt;1%</td></tr>
+        <tr><td>• Desprendimiento de retina después de la cirugía</td><td>0.5–1%</td></tr>
+        <tr><td>• Opacificación de la membrana posterior (membrana secundaria que requiere tratamiento con láser posterior)</td><td>20–40%</td></tr>
+        <tr><td>• Hemorragia grave dentro del ojo (muy rara)</td><td>&lt;0.1%</td></tr>
+        <tr><td>• Descentramiento o desplazamiento del lente artificial implantado</td><td>&lt;1%</td></tr>
+        <tr><td>• Hinchazón de la retina central con disminución de la visión</td><td>1–2%</td></tr>
+        <tr><td>• Inflamación ocular (uveítis)</td><td>Poco frecuente</td></tr>
+        <tr><td>• Aumento de la presión intraocular</td><td>1–2%</td></tr>
+        <tr><td>• Riesgos propios de la anestesia local o sedación</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud, edad, medicamentos, ojo a operar u otras circunstancias:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci8_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci8_alt_observacion"> Observación (cataratas iniciales sin impacto significativo en las actividades diarias)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci8_alt_correccion_optica"> Corrección óptica con gafas o lentes de contacto (alivio temporal)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci8_alt_no_cirugia"> No cirugía (con documentación del impacto en la calidad de vida)</label>
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento — o me ha sido leído en caso de no poder hacerlo por mí mismo(a) — y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci8SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci8DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci8_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci8_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci8_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci8_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci8_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
-// ─── 9. PSICOLOGÍA ──────────────────────────────────────────────────
+// ─── 9. HERNIORRAFIA UMBILICAL ───────────────────────────────────────
 9: {
-  titulo: "Consentimiento Informado - Psicología",
+  titulo: "Consentimiento Informado Médico Herniorrafia Umbilical",
   contenido: `
-    <p>Mediante el presente documento legal certifico que he sido informado por parte del Psicólogo de la Clínica Medihelp Services sobre la siguiente actividad, intervención, procedimiento especial o tratamiento que requiero:</p>
-    <p><strong>Atención y apoyo psicológico</strong> durante mi estancia en la institución, basado en el acompañamiento, valoración, intervención y seguimiento de la necesidad presentada como paciente, y monitorear el avance emocional y mental en el proceso de hospitalización y tratamiento médico.</p>
-    <h4>Posibles efectos secundarios o complicaciones:</h4>
-    <ul>
-      <li>Aumento o aparición de nuevos síntomas psicológicos o reacciones adversas emocionales</li>
-      <li>Dependencia al proceso terapéutico o al apoyo del psicólogo</li>
-      <li>Rechazo o resistencia a continuar en terapia o buscar tratamiento en el futuro</li>
-      <li>Resultado negativo con deterioro del paciente en terapia, sin un actuar culposo del terapeuta</li>
-    </ul>
-    <div class="form-inline-field"><label>Alternativas de tratamiento informadas:</label><textarea name="ci_alternativas" rows="2" placeholder="Alternativas de tratamiento..."></textarea></div>
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La herniorrafia umbilical es la corrección quirúrgica de la hernia umbilical, que ocurre cuando parte del intestino u otro tejido abdominal sale a través de un defecto en la musculatura de la zona del ombligo. Bajo anestesia (local, regional o general), se devuelve el contenido herniado a su posición normal y se cierra el defecto de la pared abdominal con puntos o con una malla protésica para evitar la recurrencia.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Infección de la herida quirúrgica</td><td>2–5%</td></tr>
+        <tr><td>Hematoma o acumulación de líquido en el sitio de la cirugía</td><td>2–5%</td></tr>
+        <tr><td>Recurrencia de la hernia</td><td>1–10% según técnica y características del paciente</td></tr>
+        <tr><td>Dolor crónico en la zona operada</td><td>2–5%</td></tr>
+        <tr><td>Complicaciones de la malla (infección, rechazo, adherencias)</td><td>&lt;2%</td></tr>
+        <tr><td>Parálisis intestinal temporal post-operatoria</td><td>Poco frecuente</td></tr>
+        <tr><td>Lesión intestinal o de vasos sanguíneos</td><td>Muy raro</td></tr>
+        <tr><td>Riesgos propios de la anestesia utilizada</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según mis condiciones de salud, obesidad, antecedentes quirúrgicos, tabaquismo, tamaño del defecto u otras comorbilidades:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci9_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci9_alt_observacion"> Observación (hernias pequeñas asintomáticas, especialmente en niños menores de 2 años)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci9_alt_faja"> Faja o sostén abdominal (alivio temporal, no es tratamiento definitivo)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci9_alt_no_cirugia"> No cirugía (con documentación de los riesgos de complicaciones)</label>
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento — o me ha sido leído en caso de no poder hacerlo por mí mismo(a) — y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci9SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci9DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci9_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci9_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci9_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci9_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci9_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 
@@ -285,6 +912,120 @@ const FORMULARIOS = {
     <p><em>Algunas de estas complicaciones pueden ser graves y conllevar a la muerte.</em></p>
 
     <div class="form-inline-field"><label>Riesgos adicionales específicos del paciente:</label><textarea name="ci_riesgos_esp" rows="2" placeholder="Riesgos adicionales..."></textarea></div>
+  `
+},
+
+// ─── 11. LITOTRICIA EXTRACORPÓREA (ondas de choque) ──────────────────
+11: {
+  titulo: "Consentimiento Informado — Litotricia Extracorpórea por Ondas de Choque",
+  contenido: `
+    <div class="anx-block-title">4. DESCRIPCIÓN DEL PROCEDIMIENTO</div>
+    <p>La litotricia extracorpórea por ondas de choque es un procedimiento no invasivo para tratar cálculos (piedras) en el riñón o el uréter. Mediante un equipo externo que genera ondas acústicas de alta energía, se fragmentan los cálculos desde el exterior del cuerpo sin incisiones. Los fragmentos resultantes son eliminados de forma natural a través de la orina. Se requiere sedación o anestesia para controlar el dolor. El procedimiento puede requerir más de una sesión.</p>
+
+    <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+    <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+    <table class="anx-table">
+      <thead>
+        <tr>
+          <th>COMPLICACIÓN / RIESGO</th>
+          <th>FRECUENCIA</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Cólico renal por paso de los fragmentos del cálculo por el uréter</td><td>Frecuente</td></tr>
+        <tr><td>Sangre en la orina de manera transitoria</td><td>Muy frecuente</td></tr>
+        <tr><td>Acumulación de sangre alrededor del riñón (hematoma perirrenal)</td><td>0.5–1%</td></tr>
+        <tr><td>Obstrucción del uréter por acumulación de fragmentos</td><td>2–4%</td></tr>
+        <tr><td>Infección urinaria o infección generalizada (especialmente si el cálculo está infectado)</td><td>1–3%</td></tr>
+        <tr><td>Fragmentación incompleta que requiera procedimiento adicional</td><td>10–30% según tamaño del cálculo</td></tr>
+        <tr><td>Manchas o moretones en la piel en la zona de impacto de las ondas</td><td>Frecuente, transitorio</td></tr>
+        <tr><td>Lesión de órganos vecinos en casos excepcionales</td><td>Muy raro</td></tr>
+        <tr><td>Riesgos propios de la sedación o anestesia</td><td>Ver consentimiento de anestesia</td></tr>
+      </tbody>
+    </table>
+
+    <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+    <p>En mi caso particular, el médico me ha explicado los siguientes riesgos adicionales según el tamaño y número de cálculos, antecedentes de infección, anatomía, función renal, tratamiento anticoagulante u otras condiciones:</p>
+    <div class="form-inline-field"><label>Riesgos adicionales del caso:</label><textarea name="ci10_riesgos_adicionales" rows="3" placeholder="Describa los riesgos adicionales..." required></textarea></div>
+
+    <div class="anx-block-title">7. ALTERNATIVAS AL PROCEDIMIENTO</div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci10_alt_endoscopia_laser"> Endoscopia ureteral con fragmentación láser del cálculo</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci10_alt_percutanea"> Extracción percutánea del cálculo (para cálculos grandes mayores de 2 cm)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci10_alt_expectante"> Manejo expectante con hidratación y analgesia (cálculos pequeños con alta probabilidad de salida espontánea)</label>
+    </div>
+    <div class="anx-row anx-row--compact">
+      <label class="anx-inline-check"><input type="checkbox" name="ci10_alt_cirugia_abierta_lap"> Cirugía abierta o laparoscópica (casos complejos)</label>
+    </div>
+
+    <div class="anx-block-title">8. DECLARACIÓN DE ENTENDIMIENTO Y ACEPTACIÓN</div>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leído el presente documento — o me ha sido leído en caso de no poder hacerlo por mí mismo(a) — y he entendido la información que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el médico tratante.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_revocacion_info"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento, sin que ello implique perjuicio alguno para mi atención médica.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realización del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolución 13437 de 1991 y los estándares de acreditación internacional en salud vigentes.</label>
+    <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realización del procedimiento descrito en este consentimiento.</label>
+
+    <div class="anx-block-title" id="ci10SectionFirmasTitle">9. FIRMAS DE CONSENTIMIENTO</div>
+    <div id="ci10DissentFields" style="display:none;">
+      <div class="anx-row">
+        <div class="anx-label">Yo, (nombre y documento):</div>
+        <input name="ci10_disent_nombre_doc" class="ax-full-line">
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">en calidad de:</div>
+        <input name="ci10_disent_calidad" class="ax-full-line">
+      </div>
+      <div class="anx-row anx-inline-checks">
+        <div class="anx-label">Declaro que:</div>
+        <label><input type="checkbox" name="ci10_disent_rechaza"> Rechazo el procedimiento</label>
+      </div>
+      <div class="anx-row anx-row--field-top">
+        <div class="anx-label">Motivo:</div>
+        <textarea name="ci10_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Fecha y hora:</div>
+        <input type="datetime-local" name="ci10_disent_fecha_hora" class="ax-full-line">
+      </div>
+    </div>
+    <div class="anx-firmas-box">
+      <div class="anx-firmas-top">
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Paciente / Rep. Legal</div>
+          <div class="anx-firma-body">
+            <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automáticamente según la identificación (§2). Modifique nombre y documento en esa sección."></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 1</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y vínculo/parentesco</div>
+        </div>
+        <div class="anx-firma-card">
+          <div class="anx-firma-head">Testigo 2</div>
+          <div class="anx-firma-body">
+            <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+            <textarea name="ax_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+          </div>
+          <div class="anx-firma-foot">Nombre y documento de identidad</div>
+        </div>
+      </div>
+      <div class="anx-firma-card anx-firma-card-medico">
+        <div class="anx-firma-head">Médico Tratante</div>
+        <div class="anx-firma-body">
+          <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+        </div>
+        <div class="anx-firma-foot">Nombre completo | Registro Médico | Especialidad</div>
+      </div>
+    </div>
   `
 },
 

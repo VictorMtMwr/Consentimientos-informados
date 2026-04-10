@@ -6,13 +6,233 @@ let doctorSignaturePad = null;
 
 /** Solo estos campos del formulario de anestesia (id 1) deben persistir como datos del médico. Evita guardar checkboxes del paciente (declaraciones, identificación §2, disentimiento) por el bug histórico de usar input.value === "on" en todos los checkbox. */
 const ANESTHESIA_MEDICO_PREFILL_KEYS = new Set([
-  'ax_ciudad', 'ax_fecha_hora', 'medico', 'diagnostico', 'servicio',
+  'ax_fecha_hora', 'medico', 'diagnostico', 'servicio',
   'ax_tipo_general', 'ax_tipo_regional', 'ax_tipo_sedacion', 'ax_tipo_anestesia',
   'ax_riesgos_adicionales', 'ax_alt_1', 'ax_alt_2', 'ax_alt_3'
 ]);
 
+const COMMON_PATIENT_OWNED_KEYS = new Set([
+  'ci_nombre_otorga',
+  'ci_doc_otorga',
+  'ci_mi_mismo',
+  'ci_paciente',
+  'ci_paciente_nombre',
+  'ci_paciente_doc',
+  'ci_padre',
+  'ci_tutor',
+  'ci_apoderado',
+  'ci_conyuge',
+  'ci_familiar',
+  'declara_informado',
+  'declara_revocacion_info',
+  'declara_revocar',
+  'declara_voluntario',
+  'declara_no_autoriza',
+  'ax_firma_paciente_nombre',
+  'ax_testigo1',
+  'ax_testigo2',
+  'bi_disent_nombre_doc',
+  'bi_disent_calidad',
+  'bi_disent_rechaza',
+  'bi_disent_motivo',
+  'bi_disent_fecha_hora',
+  'cv_disent_nombre_doc',
+  'cv_disent_calidad',
+  'cv_disent_rechaza',
+  'cv_disent_motivo',
+  'cv_disent_fecha_hora',
+  'ci4_disent_nombre_doc',
+  'ci4_disent_calidad',
+  'ci4_disent_rechaza',
+  'ci4_disent_motivo',
+  'ci4_disent_fecha_hora',
+  'ci4_declara_autoriza_dr',
+  'ci5_disent_nombre_doc',
+  'ci5_disent_calidad',
+  'ci5_disent_rechaza',
+  'ci5_disent_motivo',
+  'ci5_disent_fecha_hora',
+  'ci6_disent_nombre_doc',
+  'ci6_disent_calidad',
+  'ci6_disent_rechaza',
+  'ci6_disent_motivo',
+  'ci6_disent_fecha_hora',
+  'ci7_disent_nombre_doc',
+  'ci7_disent_calidad',
+  'ci7_disent_rechaza',
+  'ci7_disent_motivo',
+  'ci7_disent_fecha_hora',
+  'ci8_disent_nombre_doc',
+  'ci8_disent_calidad',
+  'ci8_disent_rechaza',
+  'ci8_disent_motivo',
+  'ci8_disent_fecha_hora',
+  'ci9_disent_nombre_doc',
+  'ci9_disent_calidad',
+  'ci9_disent_rechaza',
+  'ci9_disent_motivo',
+  'ci9_disent_fecha_hora',
+  'ci10_disent_nombre_doc',
+  'ci10_disent_calidad',
+  'ci10_disent_rechaza',
+  'ci10_disent_motivo',
+  'ci10_disent_fecha_hora',
+  'bi_firma_paciente_nombre',
+  'bi_testigo1',
+  'bi_testigo2'
+]);
+
+const COMMON_TEMPLATE_REUSE_CONFIG = {
+  1: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'bi_proc_manga',
+      'bi_proc_bypass',
+      'bi_proc_biliopancreatica',
+      'bi_proc_otra',
+      'bi_proc_otra_detalle',
+      'bi_riesgos_adicionales',
+      'bi_alt_conservador',
+      'bi_alt_farmacologico',
+      'bi_alt_endoscopico',
+      'bi_alt_otra_tecnica',
+      'bi_alt_otra_tecnica_detalle',
+      'bi_alt_no_realizar'
+    ],
+    signatureNameField: 'bi_firma_paciente_nombre',
+    dissentNameField: 'bi_disent_nombre_doc',
+    dissentRoleField: 'bi_disent_calidad'
+  },
+  2: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'cv_tipo_valvula',
+      'cv_reparacion_tejido_nativo',
+      'cv_procedimiento_especifico',
+      'cv_euroscore_ii',
+      'cv_riesgo_muerte_individualizado',
+      'cv_riesgos_adicionales',
+      'cv_alt_tratamiento_medico',
+      'cv_alt_cateterismo',
+      'cv_alt_no_realizar',
+      'cv_alt_otra',
+      'cv_alt_otra_detalle'
+    ],
+    // Cardiovascular replica la caja de firma de anestesia en forms-es.js
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'cv_disent_nombre_doc',
+    dissentRoleField: 'cv_disent_calidad'
+  },
+  4: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci4_riesgos_adicionales',
+      'ci4_alt_no_cirugia',
+      'ci4_alt_prepucioplastia',
+      'ci4_alt_otra',
+      'ci4_alt_otra_detalle'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci4_disent_nombre_doc',
+    dissentRoleField: 'ci4_disent_calidad'
+  },
+  5: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci5_riesgos_adicionales',
+      'ci5_alt_conservador',
+      'ci5_alt_drenaje',
+      'ci5_alt_abierta',
+      'ci5_alt_no_cirugia'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci5_disent_nombre_doc',
+    dissentRoleField: 'ci5_disent_calidad'
+  },
+  6: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci6_riesgos_adicionales',
+      'ci6_alt_flexible_recto_colon_izquierdo',
+      'ci6_alt_tomografia_colon',
+      'ci6_alt_capsula_colon',
+      'ci6_alt_no_realizar'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci6_disent_nombre_doc',
+    dissentRoleField: 'ci6_disent_calidad'
+  },
+  7: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci7_riesgos_adicionales',
+      'ci7_alt_estudio_radiologico_contraste',
+      'ci7_alt_capsula_endoscopica',
+      'ci7_alt_manejo_medico_empirico'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci7_disent_nombre_doc',
+    dissentRoleField: 'ci7_disent_calidad'
+  },
+  8: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci8_riesgos_adicionales',
+      'ci8_alt_observacion',
+      'ci8_alt_correccion_optica',
+      'ci8_alt_no_cirugia'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci8_disent_nombre_doc',
+    dissentRoleField: 'ci8_disent_calidad'
+  },
+  9: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci9_riesgos_adicionales',
+      'ci9_alt_observacion',
+      'ci9_alt_faja',
+      'ci9_alt_no_cirugia'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci9_disent_nombre_doc',
+    dissentRoleField: 'ci9_disent_calidad'
+  },
+  11: {
+    doctorOwnedFields: [
+      'medico',
+      'diagnostico',
+      'servicio',
+      'ci10_riesgos_adicionales',
+      'ci10_alt_endoscopia_laser',
+      'ci10_alt_percutanea',
+      'ci10_alt_expectante',
+      'ci10_alt_cirugia_abierta_lap'
+    ],
+    signatureNameField: 'ax_firma_paciente_nombre',
+    dissentNameField: 'ci10_disent_nombre_doc',
+    dissentRoleField: 'ci10_disent_calidad'
+  }
+};
+
 function isAnesthesiaMedicoPrefillKey(consentId, name) {
-  if (Number(consentId) !== 1) return true;
+  if (Number(consentId) !== 1) return !COMMON_PATIENT_OWNED_KEYS.has(name);
   return ANESTHESIA_MEDICO_PREFILL_KEYS.has(name);
 }
 
@@ -247,6 +467,24 @@ function lockDoctorOnlyFields(consent) {
   });
 }
 
+function lockCommonDoctorOwnedFieldsForPatient(consent) {
+  if (Number(consent?.id) === 1) return;
+  const formId = Number(getConsentFormId(consent));
+  const doctorOwned = COMMON_TEMPLATE_REUSE_CONFIG[formId]?.doctorOwnedFields || [
+    'medico',
+    'diagnostico',
+    'servicio'
+  ];
+  doctorOwned.forEach((name) => {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return;
+    el.disabled = true;
+    el.readOnly = true;
+    const label = el.closest('label');
+    if (label) label.classList.add('is-locked-field');
+  });
+}
+
 function restoreSavedSignatures(pc) {
   const signatures = pc?.signatures;
   if (!signatures || typeof signatures !== 'object') return;
@@ -293,6 +531,31 @@ function lockPatientOwnedSectionForDoctor(consent) {
     el.readOnly = true;
     const label = el.closest('label');
     if (label) label.classList.add('is-locked-field');
+  });
+}
+
+function lockCommonPatientOwnedSectionForDoctor(consent) {
+  if (Number(consent?.id) === 1) return;
+  COMMON_PATIENT_OWNED_KEYS.forEach((name) => {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return;
+    el.disabled = true;
+    el.readOnly = true;
+    const label = el.closest('label');
+    if (label) label.classList.add('is-locked-field');
+  });
+}
+
+function lockCityForAllUsers() {
+  ['ax_ciudad', 'ci_ciudad'].forEach((name) => {
+    const el = document.querySelector(`[name="${name}"]`);
+    if (!el) return;
+    if (!String(el.value || '').trim()) {
+      el.value = 'Cartagena de Indias - Bolivar';
+    }
+    el.readOnly = true;
+    el.disabled = true;
+    el.classList.add('filled');
   });
 }
 
@@ -603,6 +866,393 @@ function buildAnesthesiaConsentTemplate(patient, dateStr) {
   `;
 }
 
+function buildBariatricConsentTemplate() {
+  return `
+      <div class="anx-block-title">4. INFORMACION DEL PROCEDIMIENTO</div>
+      <p class="anx-p">
+        La cirugia bariatrica es una intervencion quirurgica del aparato digestivo indicada para el tratamiento de la obesidad severa (indice de masa corporal >= 40 kg/m2, o >= 35 kg/m2 con enfermedades asociadas como diabetes, hipertension, apnea del sueno). Actua reduciendo la capacidad del estomago y/o modificando la absorcion de nutrientes.
+      </p>
+      <p class="anx-p"><strong>El procedimiento a realizarse es:</strong></p>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_proc_manga"> Manga gastrica (gastrectomia en manga): extirpacion del 75-80% del estomago, dejando un tubo de pequeno volumen.</label>
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_proc_bypass"> Bypass gastrico en Y de Roux: creacion de un pequeno reservorio gastrico conectado directamente al intestino delgado.</label>
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_proc_biliopancreatica"> Derivacion biliopancreatica con interrupcion duodenal: tecnica mixta de restriccion y malabsorcion.</label>
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_proc_otra"> Otra tecnica:</label>
+        <input name="bi_proc_otra_detalle" class="ax-full-line" placeholder="Describa otra tecnica, si aplica">
+      </div>
+      <p class="anx-p">
+        La cirugia se realiza principalmente por via laparoscopica (pequenas incisiones). En caso necesario puede convertirse a cirugia abierta.
+      </p>
+
+      <div class="anx-block-title">5. POSIBLES COMPLICACIONES</div>
+      <p class="anx-p">Me ha informado sobre las posibles complicaciones del procedimiento y entiendo que pueden presentarse los siguientes riesgos:</p>
+      <table class="anx-table">
+        <thead>
+          <tr>
+            <th>COMPLICACION / RIESGO</th>
+            <th>FRECUENCIA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Fistula o escape de la linea de grapas (complicacion grave que puede requerir reoperacion)</td><td>1-3%</td></tr>
+          <tr><td>Hemorragia intraabdominal o de la linea de grapas</td><td>1-4%</td></tr>
+          <tr><td>Trombosis venosa profunda o embolia pulmonar</td><td>0.3-2%</td></tr>
+          <tr><td>Estenosis o estrechez de la manga / anastomosis (dificultad para comer)</td><td>3-5%</td></tr>
+          <tr><td>Reflujo gastroesofagico cronico (especialmente en manga gastrica)</td><td>10-30%</td></tr>
+          <tr><td>Nauseas y vomitos prolongados en el postoperatorio</td><td>Frecuente, transitorio</td></tr>
+          <tr><td>Infeccion de la herida o del espacio intraabdominal</td><td>1-3%</td></tr>
+          <tr><td>Hernia en sitio de trocar</td><td>0.5-1%</td></tr>
+          <tr><td>Deficiencias nutricionales: hierro, vitamina B12, vitamina D, calcio, proteinas</td><td>Frecuente a largo plazo</td></tr>
+          <tr><td>Sindrome de dumping (mareos, sudoracion, diarrea tras comer)</td><td>Frecuente - bypass gastrico</td></tr>
+          <tr><td>Calculos biliares (litiasis biliar postoperatoria)</td><td>30%</td></tr>
+          <tr><td>Necesidad de reoperacion o revision de la cirugia</td><td>2-5%</td></tr>
+          <tr><td>Complicaciones respiratorias / neumonia postoperatoria</td><td>1-2%</td></tr>
+          <tr><td>Riesgos propios de la anestesia general (ver consentimiento de anestesia)</td><td>Ver consentimiento de anestesia</td></tr>
+          <tr><td>Muerte</td><td>0.1-0.3%</td></tr>
+        </tbody>
+      </table>
+
+      <div class="anx-block-title">6. RIESGOS ADICIONALES DE MI CASO PARTICULAR</div>
+      <p class="anx-p">En mi caso particular, el medico me ha explicado los siguientes riesgos adicionales segun mis condiciones de salud individuales:</p>
+      <div class="anx-row">
+        <textarea name="bi_riesgos_adicionales" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+      </div>
+
+      <div class="anx-block-title">7. ALTERNATIVAS DE TRATAMIENTO</div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_alt_conservador"> Manejo conservador: dieta, actividad fisica y cambio de habitos supervisados</label>
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_alt_farmacologico"> Tratamiento farmacologico para la obesidad (con resultados limitados)</label>
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_alt_endoscopico"> Procedimientos endoscopicos (balon intragastrico, gastroplastia endoscopica)</label>
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_alt_otra_tecnica"> Otra tecnica quirurgica bariatrica:</label>
+        <input name="bi_alt_otra_tecnica_detalle" class="ax-full-line" placeholder="Describa la tecnica, si aplica">
+      </div>
+      <div class="anx-row anx-row--compact">
+        <label class="anx-inline-check"><input type="checkbox" name="bi_alt_no_realizar"> No realizar el procedimiento (con documentacion de riesgos de la obesidad)</label>
+      </div>
+
+      <div class="anx-block-title">8. RECUPERACION Y MANEJO DEL DOLOR</div>
+      <p class="anx-p">
+        Despues de la cirugia pasare por una fase de recuperacion progresiva con dieta liquida y semiblanda.
+        El dolor sera manejado con analgesicos. Se me informara sobre el programa de seguimiento nutricional y medico
+        a largo plazo, incluyendo suplementos vitaminicos de por vida.
+      </p>
+
+      <div class="anx-block-title">9. DECLARACION DE ENTENDIMIENTO Y ACEPTACION</div>
+      <label class="anx-decl-item"><input type="checkbox" name="declara_informado" required> Declaro que he leido el presente documento - o me ha sido leido en caso de no poder hacerlo por mi mismo(a) - y he entendido la informacion que se me ha suministrado. He tenido oportunidad de formular todas las preguntas que he considerado necesarias, y las mismas han sido respondidas de manera satisfactoria por el medico tratante.</label>
+      <label class="anx-decl-item"><input type="checkbox" name="declara_revocar"> Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realizacion del procedimiento, sin que ello implique perjuicio alguno para mi atencion medica.</label>
+      <label class="anx-decl-item"><input type="checkbox" name="declara_voluntario" required> Por lo anterior, de manera libre, consciente, informada y voluntaria, OTORGO MI CONSENTIMIENTO para la realizacion del procedimiento descrito, conforme a lo establecido en la Ley 23 de 1981, el Decreto 3380 de 1981, la Resolucion 13437 de 1991 y los estandares de acreditacion internacional en salud vigentes.</label>
+      <label class="anx-decl-item"><input type="checkbox" name="declara_no_autoriza"> No autorizo la realizacion del procedimiento descrito en este consentimiento.</label>
+
+      <div class="anx-block-title" id="biSection10Title">10. FIRMAS DE CONSENTIMIENTO</div>
+      <div id="biDissentFields" style="display:none;">
+        <div class="anx-row">
+          <div class="anx-label">Yo, (nombre y documento):</div>
+          <input name="bi_disent_nombre_doc" class="ax-full-line">
+        </div>
+        <div class="anx-row">
+          <div class="anx-label">en calidad de:</div>
+          <input name="bi_disent_calidad" class="ax-full-line">
+        </div>
+        <div class="anx-row anx-inline-checks">
+          <div class="anx-label">Declaro que:</div>
+          <label><input type="checkbox" name="bi_disent_rechaza"> Rechazo el procedimiento</label>
+        </div>
+        <div class="anx-row anx-row--field-top">
+          <div class="anx-label">Motivo:</div>
+          <textarea name="bi_disent_motivo" class="ax-full-line ax-full-line--multiline" rows="3" spellcheck="false"></textarea>
+        </div>
+        <div class="anx-row">
+          <div class="anx-label">Fecha y hora:</div>
+          <input type="datetime-local" name="bi_disent_fecha_hora" class="ax-full-line">
+        </div>
+      </div>
+      <div class="anx-firmas-box">
+        <div class="anx-firmas-top">
+          <div class="anx-firma-card">
+            <div class="anx-firma-head">Paciente / Rep. Legal</div>
+            <div class="anx-firma-body">
+              <div id="axPacienteSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+              <textarea name="bi_firma_paciente_nombre" class="anx-sign-line anx-sign-line--multiline anx-sign-line--sync-only" rows="3" spellcheck="false" readonly title="Se completa automaticamente segun la identificacion del otorgante."></textarea>
+            </div>
+            <div class="anx-firma-foot">Nombre y documento de identidad</div>
+          </div>
+          <div class="anx-firma-card">
+            <div class="anx-firma-head">Testigo 1</div>
+            <div class="anx-firma-body">
+              <div id="axTestigo1SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+              <textarea name="bi_testigo1" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+            </div>
+            <div class="anx-firma-foot">Nombre y vinculo/parentesco</div>
+          </div>
+          <div class="anx-firma-card">
+            <div class="anx-firma-head">Testigo 2</div>
+            <div class="anx-firma-body">
+              <div id="axTestigo2SignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+              <textarea name="bi_testigo2" class="anx-sign-line anx-sign-line--multiline" rows="2" spellcheck="false" autocomplete="off"></textarea>
+            </div>
+            <div class="anx-firma-foot">Nombre y documento de identidad</div>
+          </div>
+        </div>
+        <div class="anx-firma-card anx-firma-card-medico">
+          <div class="anx-firma-head">Medico Tratante</div>
+          <div class="anx-firma-body">
+            <div id="axMedicoSignSlot" class="ax-sign-slot ax-sign-slot-table"></div>
+          </div>
+          <div class="anx-firma-foot">Nombre completo | Registro Medico | Especialidad</div>
+        </div>
+      </div>
+  `;
+}
+
+function buildCommonConsentIntroTemplate(consent, patient, readOnly) {
+  const p = patient || {};
+  const ro = readOnly ? 'readonly' : '';
+  const dis = readOnly ? 'disabled' : '';
+  const docVal = `${p.tipoDoc || 'CC'} ${p.cedula || ''}`.trim();
+  const nombreVal = String(p.nombre || '');
+  const consentTitle = String(consent?.titulo || 'CONSENTIMIENTO INFORMADO').toUpperCase();
+
+  const anxSubtitle = consent?.subtituloDoc
+    ? `${consent.subtituloDoc} — Clinica Medihelp Services`
+    : 'Clinica Medihelp Services';
+
+  return `
+      <h2 class="anx-title">${consentTitle}</h2>
+      <p class="anx-subtitle">${anxSubtitle}</p>
+
+      <div class="anx-block-title">1. LUGAR Y FECHA</div>
+      <div class="anx-row anx-row-fecha">
+        <div class="anx-label">Ciudad:</div><input name="ci_ciudad" value="Cartagena de Indias - Bolivar" ${ro}>
+        <div class="anx-label">Fecha y hora:</div><input type="datetime-local" name="ci_fecha_hora" class="ax-mini" ${ro}>
+      </div>
+
+      <div class="anx-block-title">2. IDENTIFICACION DE QUIEN OTORGA EL CONSENTIMIENTO</div>
+      <div class="anx-row anx-row-ident">
+        <div class="anx-label">Yo:</div><input name="ci_nombre_otorga" value="${nombreVal}" ${ro}>
+        <div class="anx-label">Identificado(a) con:</div><input name="ci_doc_otorga" value="${docVal}" ${ro}>
+      </div>
+      <div class="anx-row anx-row-representante">
+        <div class="anx-label">Actuo en nombre de:</div>
+        <div class="anx-checkgroup">
+          <label><input type="checkbox" name="ci_mi_mismo" ${dis}> Mi mismo(a)</label>
+          <label><input type="checkbox" name="ci_paciente" ${dis}> Del/La paciente</label>
+        </div>
+        <div class="anx-inline-pair">
+          <div class="anx-label">Paciente:</div><input name="ci_paciente_nombre" ${ro}>
+        </div>
+        <div class="anx-inline-pair">
+          <div class="anx-label">Identificado(a) paciente:</div><input name="ci_paciente_doc" ${ro}>
+        </div>
+      </div>
+      <div class="anx-row">
+        <div class="anx-label">Calidad / representacion:</div>
+        <div class="anx-checkgroup anx-checkgroup-wide">
+          <label><input type="checkbox" name="ci_padre" ${dis}> Padre/Madre</label>
+          <label><input type="checkbox" name="ci_tutor" ${dis}> Tutor legal</label>
+          <label><input type="checkbox" name="ci_apoderado" ${dis}> Apoderado(a)</label>
+          <label><input type="checkbox" name="ci_conyuge" ${dis}> Conyuge</label>
+          <label><input type="checkbox" name="ci_familiar" ${dis}> Familiar primer grado</label>
+        </div>
+      </div>
+
+      <div class="anx-block-title">3. INFORMACION MEDICA RECIBIDA</div>
+      <div class="anx-row"><div class="anx-label">Doctor(a) tratante:</div><input name="medico" ${ro}></div>
+      <div class="anx-row"><div class="anx-label">Enfermedad / diagnostico:</div><input name="diagnostico" ${ro}></div>
+      <div class="anx-row"><div class="anx-label">Procedimiento a realizar:</div><input name="servicio" ${ro}></div>
+  `;
+}
+
+function getCommonRepresentacionLabel() {
+  const map = [
+    ['ci_padre', 'Padre/Madre'],
+    ['ci_tutor', 'Tutor legal'],
+    ['ci_apoderado', 'Apoderado(a)'],
+    ['ci_conyuge', 'Conyuge'],
+    ['ci_familiar', 'Familiar primer grado']
+  ];
+  for (const [name, label] of map) {
+    const el = document.querySelector(`input[name="${name}"]`);
+    if (el?.checked) return label;
+  }
+  return '';
+}
+
+function syncCommonDerivedSignatureFields(patient) {
+  const reusableSignatureSelectors = Object.values(COMMON_TEMPLATE_REUSE_CONFIG)
+    .map((cfg) => cfg.signatureNameField)
+    .filter(Boolean)
+    .map((name) => `[name="${name}"]`);
+  reusableSignatureSelectors.push('[name="ci_firma_paciente_nombre"]');
+  const fields = Array.from(document.querySelectorAll(reusableSignatureSelectors.join(', ')));
+  if (!fields.length) return;
+
+  const miMismo = document.querySelector('input[name="ci_mi_mismo"]');
+  const porPaciente = document.querySelector('input[name="ci_paciente"]');
+  const yoNombre = document.querySelector('input[name="ci_nombre_otorga"]');
+  const yoDoc = document.querySelector('input[name="ci_doc_otorga"]');
+  const p = patient || (typeof _viewerPatient !== 'undefined' ? _viewerPatient : {}) || {};
+  if (!miMismo || !porPaciente) return;
+
+  const joinNombreDoc = (n, d) => [n, d].filter((x) => String(x || '').trim()).join(' — ');
+  let line = '';
+
+  if (miMismo.checked) {
+    const n = yoNombre?.value?.trim() || p.nombre || '';
+    const d = yoDoc?.value?.trim() || `${p.tipoDoc || 'CC'} ${p.cedula || ''}`.trim();
+    const base = joinNombreDoc(n, d);
+    line = base ? `${base}\nen calidad de Paciente` : '';
+  } else if (porPaciente.checked) {
+    const n = yoNombre?.value?.trim() || '';
+    const d = yoDoc?.value?.trim() || '';
+    const base = joinNombreDoc(n, d);
+    const cal = getCommonRepresentacionLabel();
+    line = cal && base ? `${base}\nen calidad de ${cal}` : base;
+  }
+
+  fields.forEach((el) => {
+    el.value = line;
+    el.classList.toggle('filled', !!line.trim());
+  });
+
+  const lineNameDoc = line.replace('\nen calidad de Paciente', '').replace(/\nen calidad de .+$/, '');
+  const miMismoRole = document.querySelector('input[name="ci_mi_mismo"]');
+  const roleText = miMismoRole?.checked ? 'Paciente' : (getCommonRepresentacionLabel() || '');
+  Object.values(COMMON_TEMPLATE_REUSE_CONFIG).forEach((cfg) => {
+    const dissentNombreDoc = cfg.dissentNameField ? document.querySelector(`[name="${cfg.dissentNameField}"]`) : null;
+    const dissentCalidad = cfg.dissentRoleField ? document.querySelector(`[name="${cfg.dissentRoleField}"]`) : null;
+    if (dissentNombreDoc) dissentNombreDoc.value = lineNameDoc;
+    if (dissentCalidad) dissentCalidad.value = roleText;
+  });
+}
+
+function initCommonIntroCheckboxRules(patient, readOnly) {
+  const cbSelf = document.querySelector('input[name="ci_mi_mismo"]');
+  const cbRep = document.querySelector('input[name="ci_paciente"]');
+  if (!cbSelf || !cbRep) return;
+
+  const p = patient || (typeof _viewerPatient !== 'undefined' ? _viewerPatient : {}) || {};
+  const patientName = p.nombre || '';
+  const patientDoc = `${p.tipoDoc || 'CC'} ${p.cedula || ''}`.trim();
+  const yoNombre = document.querySelector('input[name="ci_nombre_otorga"]');
+  const yoDoc = document.querySelector('input[name="ci_doc_otorga"]');
+  const repPaciente = document.querySelector('input[name="ci_paciente_nombre"]');
+  const repPacienteDoc = document.querySelector('input[name="ci_paciente_doc"]');
+  const repQualityChecks = Array.from(document.querySelectorAll(
+    'input[name="ci_padre"], input[name="ci_tutor"], input[name="ci_apoderado"], input[name="ci_conyuge"], input[name="ci_familiar"]'
+  ));
+
+  const syncRepAvailability = (allowRep) => {
+    repQualityChecks.forEach((el) => {
+      if (!allowRep) el.checked = false;
+      el.disabled = readOnly || !allowRep;
+      const label = el.closest('label');
+      if (label) label.classList.toggle('is-locked-field', readOnly || !allowRep);
+    });
+  };
+
+  const applyMode = () => {
+    if (cbRep.checked) {
+      // Representante: intercambiar valores hacia los campos "Paciente" solo si están vacíos.
+      const movedName = yoNombre?.value?.trim() || '';
+      const movedDoc = yoDoc?.value?.trim() || '';
+      if (repPaciente && movedName && !repPaciente.value.trim()) repPaciente.value = movedName;
+      if (repPacienteDoc && movedDoc && !repPacienteDoc.value.trim()) repPacienteDoc.value = movedDoc;
+
+      if (yoNombre) {
+        yoNombre.value = '';
+        yoNombre.readOnly = !!readOnly;
+        yoNombre.classList.remove('filled');
+      }
+      if (yoDoc) {
+        yoDoc.value = '';
+        yoDoc.readOnly = !!readOnly;
+        yoDoc.classList.remove('filled');
+      }
+      if (repPaciente) repPaciente.readOnly = true;
+      if (repPacienteDoc) repPacienteDoc.readOnly = true;
+      syncRepAvailability(true);
+      syncCommonDerivedSignatureFields(p);
+      return;
+    }
+
+    // Mi mismo(a): usar datos del paciente en "Yo" y limpiar datos de representante.
+    if (yoNombre) {
+      yoNombre.value = patientName;
+      yoNombre.readOnly = true;
+      yoNombre.classList.add('filled');
+    }
+    if (yoDoc) {
+      yoDoc.value = patientDoc;
+      yoDoc.readOnly = true;
+      yoDoc.classList.add('filled');
+    }
+    if (repPaciente) {
+      repPaciente.value = '';
+      repPaciente.readOnly = true;
+    }
+    if (repPacienteDoc) {
+      repPacienteDoc.value = '';
+      repPacienteDoc.readOnly = true;
+    }
+    syncRepAvailability(false);
+    syncCommonDerivedSignatureFields(p);
+  };
+
+  const handleSelfChange = () => {
+    if (cbSelf.checked) cbRep.checked = false;
+    if (!cbSelf.checked && !cbRep.checked) cbSelf.checked = true;
+    applyMode();
+  };
+
+  const handleRepChange = () => {
+    if (cbRep.checked) cbSelf.checked = false;
+    if (!cbRep.checked && !cbSelf.checked) cbRep.checked = true;
+    applyMode();
+  };
+
+  cbSelf.addEventListener('change', handleSelfChange);
+  cbRep.addEventListener('change', handleRepChange);
+
+  repQualityChecks.forEach((checkbox) => {
+    checkbox.addEventListener('change', () => {
+      if (!checkbox.checked) return;
+      repQualityChecks.forEach((other) => {
+        if (other !== checkbox) other.checked = false;
+      });
+      syncCommonDerivedSignatureFields(p);
+    });
+  });
+
+  [yoNombre, yoDoc].forEach((el) => {
+    if (!el) return;
+    el.addEventListener('input', () => syncCommonDerivedSignatureFields(p));
+    el.addEventListener('change', () => syncCommonDerivedSignatureFields(p));
+  });
+
+  if (readOnly) {
+    cbSelf.disabled = true;
+    cbRep.disabled = true;
+    cbSelf.readOnly = true;
+    cbRep.readOnly = true;
+  }
+
+  if (!cbSelf.checked && !cbRep.checked) cbSelf.checked = true;
+  applyMode();
+  syncCommonDerivedSignatureFields(p);
+}
+
 async function resolveConsentContent(consent, fallbackHtml) {
   if (!consent) {
     return fallbackHtml || '<p><em>Contenido no disponible</em></p>';
@@ -610,10 +1260,13 @@ async function resolveConsentContent(consent, fallbackHtml) {
   if (consent.id === 1) {
     return buildAnesthesiaConsentTemplate(_viewerPatient || {}, new Date().toISOString().slice(0, 10));
   }
-  const html = fallbackHtml && String(fallbackHtml).trim()
-    ? fallbackHtml
-    : '<p><em>Contenido no disponible</em></p>';
-  return html;
+  const html = consent.id === 2
+    ? buildBariatricConsentTemplate()
+    : (fallbackHtml && String(fallbackHtml).trim()
+      ? fallbackHtml
+      : '<p><em>Contenido no disponible</em></p>');
+  const intro = buildCommonConsentIntroTemplate(consent, _viewerPatient || {}, !!_viewerReadOnly);
+  return `<div class="anx-doc">${intro}${html}</div>`;
 }
 
 function initDoctorSignaturePad() {
@@ -827,6 +1480,10 @@ async function loadDoctorForm(consent, patient, pc) {
 
   // Seccion 2 (identificacion y representacion) solo editable por paciente
   lockPatientOwnedSectionForDoctor(consent);
+  lockCommonPatientOwnedSectionForDoctor(consent);
+  lockCityForAllUsers();
+  initCommonIntroCheckboxRules(patient, false);
+  syncCommonDerivedSignatureFields(patient);
 
   initFormDraftPersistence(consent, patient, 'doctor', false, 'consent');
 
@@ -877,11 +1534,217 @@ function validateAnesthesiaDoctorPrefill(form) {
   return null;
 }
 
+/**
+ * Campos médicos comunes (§3) en plantillas con intro ci_*.
+ * Devuelve { msg, el } si falta algo; si todo ok, null.
+ */
+function validateCiTemplateSharedDoctorFields(form) {
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  const trimVal = (name) => {
+    const el = q(name);
+    return el ? String(el.value || '').trim() : '';
+  };
+  const reqText = (name, label) => {
+    const el = q(name);
+    if (!trimVal(name)) return { el, msg: `${label} es obligatorio para guardar.` };
+    return null;
+  };
+  let err = reqText('medico', 'Doctor(a) tratante');
+  if (err) return err;
+  err = reqText('diagnostico', 'Enfermedad / diagnóstico');
+  if (err) return err;
+  err = reqText('servicio', 'Procedimiento a realizar');
+  if (err) return err;
+  return null;
+}
+
+/**
+ * Validación previa a guardar prefill médico — cardiovascular (formId 2).
+ */
+function validateCardiovascularDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  const trimVal = (name) => {
+    const el = q(name);
+    return el ? String(el.value || '').trim() : '';
+  };
+  const reqText = (name, label) => {
+    const el = q(name);
+    if (!trimVal(name)) return { el, msg: `${label} es obligatorio para guardar.` };
+    return null;
+  };
+  let e = reqText('cv_procedimiento_especifico', 'Procedimiento específico indicado para este paciente');
+  if (e) return e;
+  e = reqText('cv_riesgos_adicionales', 'Riesgos adicionales del caso');
+  if (e) return e;
+  return null;
+}
+
+function validateCircumcisionDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci4_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci4_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
+function validateCholecystectomyDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci5_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci5_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
+function validateColonoscopyDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci6_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci6_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
+function validateUpperGiEndoscopyDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci7_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci7_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
+function validateCataractDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci8_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci8_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
+function validateUmbilicalHerniorrhaphyDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci9_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci9_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
+function validateLithotripsyDoctorPrefill(form) {
+  const err = validateCiTemplateSharedDoctorFields(form);
+  if (err) return err;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  if (!String(q('ci10_riesgos_adicionales')?.value || '').trim()) {
+    return { el: q('ci10_riesgos_adicionales'), msg: 'Riesgos adicionales del caso es obligatorio para guardar.' };
+  }
+  return null;
+}
+
 async function saveDoctorPrefill(consent, patient) {
   const form = document.getElementById('consentForm');
 
   if (Number(consent.id) === 1 && form) {
     const inv = validateAnesthesiaDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  const fid = Number(getConsentFormId(consent));
+  if (fid === 2 && form) {
+    const inv = validateCardiovascularDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 4 && form) {
+    const inv = validateCircumcisionDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 5 && form) {
+    const inv = validateCholecystectomyDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 6 && form) {
+    const inv = validateColonoscopyDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 7 && form) {
+    const inv = validateUpperGiEndoscopyDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 8 && form) {
+    const inv = validateCataractDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 9 && form) {
+    const inv = validateUmbilicalHerniorrhaphyDoctorPrefill(form);
+    if (inv) {
+      showToast(inv.msg, 'error');
+      if (inv.el) {
+        inv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof inv.el.focus === 'function') inv.el.focus();
+      }
+      return;
+    }
+  }
+  if (fid === 11 && form) {
+    const inv = validateLithotripsyDoctorPrefill(form);
     if (inv) {
       showToast(inv.msg, 'error');
       if (inv.el) {
@@ -966,7 +1829,7 @@ async function loadForm(consent, patient, readOnly) {
   const formContent = await resolveConsentContent(consent, fallbackContent);
   const ro = readOnly ? 'readonly' : '';
   const dis = readOnly ? 'disabled' : '';
-  const hideStandardSections = consent.id === 1;
+  const hideStandardSections = true;
 
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
@@ -1017,35 +1880,6 @@ async function loadForm(consent, patient, readOnly) {
           ${formContent}
         </div>
       </div>
-
-      ${hideStandardSections ? '' : `<div class="form-section">
-        <h3 class="form-section-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          ${s.declarations || 'Declaraciones del Paciente'}
-        </h3>
-        <div class="form-checkboxes">
-          <label class="form-checkbox"><input type="checkbox" name="declara_informado" ${dis} required><span>${s.declInformed || 'Declaro que he sido informado/a de manera clara y comprensible sobre el procedimiento, sus riesgos, beneficios y alternativas.'}</span></label>
-          <label class="form-checkbox"><input type="checkbox" name="declara_preguntas" ${dis} required><span>${s.declQuestions || 'He tenido la oportunidad de hacer preguntas y todas han sido respondidas a mi satisfacción.'}</span></label>
-          <label class="form-checkbox"><input type="checkbox" name="declara_voluntario" ${dis} required><span>${s.declVoluntary || 'Autorizo de manera libre y voluntaria la realización del procedimiento descrito en este consentimiento.'}</span></label>
-          <label class="form-checkbox"><input type="checkbox" name="declara_revocar" ${dis}><span>${s.declRevoke || 'Entiendo que puedo revocar este consentimiento en cualquier momento antes de la realización del procedimiento.'}</span></label>
-          <label class="form-checkbox no-auth-checkbox"><input type="checkbox" name="declara_no_autoriza" ${dis} id="chkNoAuth" onchange="toggleNoAuthReason(this)"><span>${s.declNoAuth || 'NO AUTORIZO la realización del procedimiento descrito en este consentimiento.'}</span></label>
-        </div>
-        <div class="no-auth-reason-box" id="noAuthReasonContainer">
-          <div class="no-auth-reason-header">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <label>${s.declNoAuthReason || 'Motivo de la no autorización'}</label>
-          </div>
-          <textarea name="motivo_no_autoriza" rows="4" placeholder="${s.declNoAuthPlaceholder || 'Explique detalladamente los motivos por los cuales no autoriza el procedimiento...'}" ${ro}></textarea>
-        </div>
-      </div>`}
-
-      ${hideStandardSections ? '' : `<div class="form-section">
-        <h3 class="form-section-title">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="17" y1="10" x2="3" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
-          ${s.observations || 'Observaciones adicionales'}
-        </h3>
-        <div class="form-field full-width"><textarea name="observaciones" rows="3" placeholder="${s.observationsPlaceholder || 'Ingrese cualquier observación o anotación adicional...'}" ${ro}></textarea></div>
-      </div>`}
 
       <!-- FIRMA -->
       <div class="form-section form-signature-section" id="signatureSection" ${readOnly ? 'style="display:none;"' : ''}>
@@ -1144,6 +1978,10 @@ async function loadForm(consent, patient, readOnly) {
     lockDoctorOnlyFields(consent);
     setupRepresentativeToggle(patient, readOnly);
   }
+  lockCommonDoctorOwnedFieldsForPatient(consent);
+  lockCityForAllUsers();
+  initCommonIntroCheckboxRules(patient, readOnly);
+  syncCommonDerivedSignatureFields(patient);
 
   if (consent.id === 1) syncAnesthesiaDerivedIdentityFields(patient);
   initNoAuthorizationExclusivity();
@@ -1342,16 +2180,88 @@ function toggleNoAuthReason(checkbox) {
 }
 
 function initNoAuthorizationExclusivity() {
-  const updateAnesthesiaSection9 = (isNoAuth) => {
-    const title = document.getElementById('anxSection9Title');
-    const dissentFields = document.getElementById('anxDissentFields');
-    if (title) {
-      title.textContent = isNoAuth
-        ? '9. DISENTIMIENTO - Rechazo o Revocacion del Consentimiento'
-        : '9. FIRMAS DE CONSENTIMIENTO';
+  const sectionConfigByFormId = {
+    1: {
+      titleId: 'biSection10Title',
+      dissentId: 'biDissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '10. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    2: {
+      titleId: 'cvSection10Title',
+      dissentId: 'cvDissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '10. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    10: {
+      titleId: 'anxSection9Title',
+      dissentId: 'anxDissentFields',
+      noAuthTitle: '9. DISENTIMIENTO - Rechazo del Consentimiento',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncAnesthesiaDerivedIdentityFields(_viewerPatient)
+    },
+    4: {
+      titleId: 'ci4SectionFirmasTitle',
+      dissentId: 'ci4DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    5: {
+      titleId: 'ci5SectionFirmasTitle',
+      dissentId: 'ci5DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    6: {
+      titleId: 'ci6SectionFirmasTitle',
+      dissentId: 'ci6DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    7: {
+      titleId: 'ci7SectionFirmasTitle',
+      dissentId: 'ci7DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    8: {
+      titleId: 'ci8SectionFirmasTitle',
+      dissentId: 'ci8DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    9: {
+      titleId: 'ci9SectionFirmasTitle',
+      dissentId: 'ci9DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
+    },
+    11: {
+      titleId: 'ci10SectionFirmasTitle',
+      dissentId: 'ci10DissentFields',
+      noAuthTitle: '10. DISENTIMIENTO INFORMADO',
+      defaultTitle: '9. FIRMAS DE CONSENTIMIENTO',
+      onEnable: () => syncCommonDerivedSignatureFields(_viewerPatient)
     }
+  };
+
+  const updateDissentSection = (isNoAuth) => {
+    const formId = Number(getConsentFormId(_viewerConsent));
+    const cfg = sectionConfigByFormId[formId];
+    if (!cfg) return;
+    const title = document.getElementById(cfg.titleId);
+    const dissentFields = document.getElementById(cfg.dissentId);
+    if (title) title.textContent = isNoAuth ? cfg.noAuthTitle : cfg.defaultTitle;
     if (dissentFields) dissentFields.style.display = isNoAuth ? 'block' : 'none';
-    if (isNoAuth) syncAnesthesiaDerivedIdentityFields(_viewerPatient);
+    if (isNoAuth && typeof cfg.onEnable === 'function') cfg.onEnable();
   };
 
   const bindExclusiveCheckbox = (noAuthCheckbox, otherCheckboxes) => {
@@ -1366,7 +2276,7 @@ function initNoAuthorizationExclusivity() {
         toggleNoAuthReason(noAuthCheckbox);
       }
       if (noAuthCheckbox.name === 'declara_no_autoriza') {
-        updateAnesthesiaSection9(locked);
+        updateDissentSection(locked);
       }
     };
     noAuthCheckbox.addEventListener('change', updateState);
@@ -1375,15 +2285,16 @@ function initNoAuthorizationExclusivity() {
 
   // Formularios estándar
   const standardNoAuth = document.getElementById('chkNoAuth');
-  const standardOthers = ['declara_informado', 'declara_preguntas', 'declara_voluntario', 'declara_revocar']
+  const standardOthers = ['declara_informado', 'declara_preguntas', 'declara_voluntario']
     .map((name) => document.querySelector(`[name="${name}"]`))
     .filter(Boolean);
   bindExclusiveCheckbox(standardNoAuth, standardOthers);
 
   // Plantilla de anestesia
   const anesthesiaNoAuth = document.querySelector('[name="declara_no_autoriza"]:not(#chkNoAuth)');
-  const anesthesiaOthers = ['declara_informado', 'declara_revocacion_info', 'declara_voluntario']
+  const anesthesiaOthers = ['declara_informado', 'declara_revocacion_info', 'declara_voluntario', 'ci4_declara_autoriza_dr'];
+  const anesthesiaOtherEls = anesthesiaOthers
     .map((name) => document.querySelector(`[name="${name}"]`))
     .filter(Boolean);
-  bindExclusiveCheckbox(anesthesiaNoAuth, anesthesiaOthers);
+  bindExclusiveCheckbox(anesthesiaNoAuth, anesthesiaOtherEls);
 }

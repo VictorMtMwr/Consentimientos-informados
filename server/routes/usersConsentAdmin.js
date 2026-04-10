@@ -4,8 +4,8 @@ const requireDoctorSession = require('../middleware/requireDoctorSession');
 const requireAdminSession = require('../middleware/requireAdminSession');
 const adminRepo = require('../repositories/usersConsentAdminRepo');
 
-router.use(requireDoctorSession);
-router.use(requireAdminSession);
+router.use('/admin', requireDoctorSession);
+router.use('/admin', requireAdminSession);
 
 function toPublicUser(row) {
   if (!row) return null;

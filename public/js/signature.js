@@ -226,6 +226,162 @@ function validateAnesthesiaPatientConsentForm() {
   return null;
 }
 
+/**
+ * Validaciones obligatorias globales (todos los consentimientos):
+ * - Fecha/hora del consentimiento
+ * - Nombre de testigo 1
+ * - Nombre de testigo 2
+ * @returns {{ el: Element|null, msg: string }|null}
+ */
+function validateCommonRequiredForAllConsents() {
+  const form = document.getElementById('consentForm');
+  if (!form) return null;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  const t = (name) => String(q(name)?.value || '').trim();
+  const fail = (el, msg) => ({ el: el || null, msg });
+
+  const fechaField = q('ax_fecha_hora') || q('ci_fecha_hora');
+  if (fechaField && !String(fechaField.value || '').trim()) {
+    return fail(fechaField, 'Debe diligenciar la fecha y hora del consentimiento.');
+  }
+
+  const testigo1 = q('ax_testigo1') || q('bi_testigo1');
+  if (testigo1 && !t(testigo1.name)) {
+    return fail(testigo1, 'Debe diligenciar el nombre del testigo 1.');
+  }
+
+  const testigo2 = q('ax_testigo2') || q('bi_testigo2');
+  if (testigo2 && !t(testigo2.name)) {
+    return fail(testigo2, 'Debe diligenciar el nombre del testigo 2.');
+  }
+
+  return null;
+}
+
+/** Disentimiento informado (plantillas con bloque cv / ci4 / ci5 / bi). */
+const DISSENT_FIELD_SETS = [
+  ['bi_disent_rechaza', 'bi_disent_motivo', 'bi_disent_fecha_hora', 'bi_disent_nombre_doc', 'bi_disent_calidad'],
+  ['cv_disent_rechaza', 'cv_disent_motivo', 'cv_disent_fecha_hora', 'cv_disent_nombre_doc', 'cv_disent_calidad'],
+  ['ci4_disent_rechaza', 'ci4_disent_motivo', 'ci4_disent_fecha_hora', 'ci4_disent_nombre_doc', 'ci4_disent_calidad'],
+  ['ci5_disent_rechaza', 'ci5_disent_motivo', 'ci5_disent_fecha_hora', 'ci5_disent_nombre_doc', 'ci5_disent_calidad'],
+  ['ci6_disent_rechaza', 'ci6_disent_motivo', 'ci6_disent_fecha_hora', 'ci6_disent_nombre_doc', 'ci6_disent_calidad'],
+  ['ci7_disent_rechaza', 'ci7_disent_motivo', 'ci7_disent_fecha_hora', 'ci7_disent_nombre_doc', 'ci7_disent_calidad'],
+  ['ci8_disent_rechaza', 'ci8_disent_motivo', 'ci8_disent_fecha_hora', 'ci8_disent_nombre_doc', 'ci8_disent_calidad'],
+  ['ci9_disent_rechaza', 'ci9_disent_motivo', 'ci9_disent_fecha_hora', 'ci9_disent_nombre_doc', 'ci9_disent_calidad'],
+  ['ci10_disent_rechaza', 'ci10_disent_motivo', 'ci10_disent_fecha_hora', 'ci10_disent_nombre_doc', 'ci10_disent_calidad']
+];
+
+/**
+ * Paciente — consentimientos con intro común ci_* (bariátrica en viewer, cardiovascular, circuncisión, colecistectomía, etc.).
+ * Incluye §1–2, declaraciones §8, disentimiento, testigos y línea bajo firma del paciente.
+ * @returns {{ el: Element|null, msg: string }|null}
+ */
+function validateCommonCiTemplatePatientConsentForm() {
+  const form = document.getElementById('consentForm');
+  if (!form || !form.querySelector('[name="ci_fecha_hora"]')) return null;
+  const q = (name) => form.querySelector(`[name="${name}"]`);
+  const t = (name) => String(q(name)?.value || '').trim();
+  const fail = (el, msg) => ({ el: el || null, msg });
+
+  if (!t('ci_ciudad')) return fail(q('ci_ciudad'), 'Indique la ciudad (§1 Lugar y fecha).');
+  if (!t('ci_fecha_hora')) return fail(q('ci_fecha_hora'), 'Indique la fecha y hora (§1).');
+
+  if (!t('ci_nombre_otorga')) return fail(q('ci_nombre_otorga'), 'Indique quién otorga el consentimiento (§2).');
+  if (!t('ci_doc_otorga')) return fail(q('ci_doc_otorga'), 'Indique el documento de identidad (§2).');
+
+  const delPaciente = q('ci_paciente')?.checked;
+  if (delPaciente) {
+    const calOk = ['ci_padre', 'ci_tutor', 'ci_apoderado', 'ci_conyuge', 'ci_familiar'].some((n) => q(n)?.checked);
+    if (!calOk) return fail(q('ci_padre'), 'Seleccione la calidad o representación (§2).');
+    if (!t('ci_paciente_nombre')) return fail(q('ci_paciente_nombre'), 'Indique el nombre del paciente (§2).');
+    if (!t('ci_paciente_doc')) return fail(q('ci_paciente_doc'), 'Indique el documento del paciente (§2).');
+  }
+
+  if (q('medico') && !t('medico')) {
+    return fail(q('medico'), 'Debe constar el médico tratante (§3). Si falta, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('diagnostico') && !t('diagnostico')) {
+    return fail(q('diagnostico'), 'Debe constar el diagnóstico (§3). Si falta, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('servicio') && !t('servicio')) {
+    return fail(q('servicio'), 'Debe constar el procedimiento a realizar (§3). Si falta, el médico debe completar y guardar antes de firmar.');
+  }
+
+  if (q('cv_procedimiento_especifico') && !t('cv_procedimiento_especifico')) {
+    return fail(q('cv_procedimiento_especifico'), 'El médico debe indicar el procedimiento específico (y guardar datos médicos) antes de firmar.');
+  }
+  if (q('cv_riesgos_adicionales') && !t('cv_riesgos_adicionales')) {
+    return fail(q('cv_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci4_riesgos_adicionales') && !t('ci4_riesgos_adicionales')) {
+    return fail(q('ci4_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci5_riesgos_adicionales') && !t('ci5_riesgos_adicionales')) {
+    return fail(q('ci5_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci6_riesgos_adicionales') && !t('ci6_riesgos_adicionales')) {
+    return fail(q('ci6_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci7_riesgos_adicionales') && !t('ci7_riesgos_adicionales')) {
+    return fail(q('ci7_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci8_riesgos_adicionales') && !t('ci8_riesgos_adicionales')) {
+    return fail(q('ci8_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci9_riesgos_adicionales') && !t('ci9_riesgos_adicionales')) {
+    return fail(q('ci9_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+  if (q('ci10_riesgos_adicionales') && !t('ci10_riesgos_adicionales')) {
+    return fail(q('ci10_riesgos_adicionales'), 'Deben constar los riesgos adicionales del caso (§6). Si faltan, el médico debe completar y guardar antes de firmar.');
+  }
+
+  const noAuth = q('declara_no_autoriza')?.checked;
+  if (noAuth) {
+    const dissentNames = DISSENT_FIELD_SETS.find(([r]) => q(r));
+    if (dissentNames) {
+      const [rName, mName, fName, nName, cName] = dissentNames;
+      const rechaza = q(rName);
+      if (!rechaza?.checked) {
+        return fail(rechaza, 'Debe marcar «Rechazo el procedimiento» en el disentimiento.');
+      }
+      if (!t(mName)) return fail(q(mName), 'Indique el motivo del disentimiento.');
+      if (!t(fName)) return fail(q(fName), 'Indique la fecha y hora del disentimiento.');
+      if (!t(nName)) return fail(q(nName), 'Complete nombre y documento en el disentimiento.');
+      if (!t(cName)) return fail(q(cName), 'Complete «en calidad de» en el disentimiento.');
+    } else {
+      const reasonField = form.querySelector('textarea[name="motivo_no_autoriza"]');
+      if (!reasonField || !String(reasonField.value || '').trim()) {
+        return fail(reasonField, 'Debe explicar el motivo de la no autorización.');
+      }
+    }
+  } else {
+    const inf = q('declara_informado');
+    if (inf && !inf.checked) {
+      return fail(inf, 'Debe aceptar la declaración sobre información recibida (§8).');
+    }
+    const uro = q('ci4_declara_autoriza_dr');
+    if (uro && uro.required && !uro.checked) {
+      return fail(uro, 'Debe aceptar la autorización al profesional indicado (§8).');
+    }
+    const rev = q('declara_revocacion_info');
+    if (rev && rev.required && !rev.checked) {
+      return fail(rev, 'Debe aceptar la declaración sobre revocación del consentimiento (§8).');
+    }
+    const vol = q('declara_voluntario');
+    if (vol && !vol.checked) {
+      return fail(vol, 'Debe otorgar su consentimiento en el §8.');
+    }
+  }
+
+  if (!t('ax_firma_paciente_nombre')) {
+    return fail(q('ax_firma_paciente_nombre'), 'Revise la identificación (§2): debe aparecer el texto bajo la firma del paciente.');
+  }
+  if (!t('ax_testigo1')) return fail(q('ax_testigo1'), 'Complete nombre y vínculo del testigo 1.');
+  if (!t('ax_testigo2')) return fail(q('ax_testigo2'), 'Complete nombre y documento del testigo 2.');
+
+  return null;
+}
+
 function submitSignature() {
   const params = new URLSearchParams(window.location.search);
   const consentIdNum = Number(params.get('id'));
@@ -261,6 +417,17 @@ function submitSignature() {
       }
     }
   } else if (isAnesthesiaConsent && finalizingSignature) {
+    const commonInv = validateCommonRequiredForAllConsents();
+    if (commonInv) {
+      showToast(commonInv.msg, 'error');
+      if (commonInv.el) {
+        commonInv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (typeof commonInv.el.focus === 'function') {
+          try { commonInv.el.focus(); } catch {}
+        }
+      }
+      return;
+    }
     const inv = validateAnesthesiaPatientConsentForm();
     if (inv) {
       showToast(inv.msg, 'error');
@@ -277,23 +444,90 @@ function submitSignature() {
       return;
     }
   } else {
-    const noAuthCheck = document.getElementById('chkNoAuth');
-    const isNoAuth = noAuthCheck && noAuthCheck.checked;
-
-    if (isNoAuth) {
-      const reasonField = document.querySelector('textarea[name="motivo_no_autoriza"]');
-      if (!reasonField || !reasonField.value.trim()) {
-        showToast('Debe explicar el motivo de la no autorización', 'error');
-        if (reasonField) reasonField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        return;
-      }
-    } else {
-      const requiredChecks = document.querySelectorAll('.form-checkboxes input[required]');
-      for (const cb of requiredChecks) {
-        if (!cb.checked) {
-          showToast('Debe aceptar todas las declaraciones obligatorias', 'error');
-          cb.closest('.form-checkbox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const isCiTemplate = !!document.querySelector('[name="ci_fecha_hora"]');
+    if (finalizingSignature) {
+      if (isCiTemplate) {
+        const tplInv = validateCommonCiTemplatePatientConsentForm();
+        if (tplInv) {
+          showToast(tplInv.msg, 'error');
+          if (tplInv.el) {
+            tplInv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof tplInv.el.focus === 'function') {
+              try { tplInv.el.focus(); } catch {}
+            }
+          }
           return;
+        }
+      } else {
+        const commonInv = validateCommonRequiredForAllConsents();
+        if (commonInv) {
+          showToast(commonInv.msg, 'error');
+          if (commonInv.el) {
+            commonInv.el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (typeof commonInv.el.focus === 'function') {
+              try { commonInv.el.focus(); } catch {}
+            }
+          }
+          return;
+        }
+      }
+    }
+
+    const noAuthCheck = document.getElementById('chkNoAuth')
+      || document.querySelector('input[name="declara_no_autoriza"]');
+    const isNoAuth = !!(noAuthCheck && noAuthCheck.checked);
+
+    if (!isCiTemplate) {
+      if (isNoAuth) {
+        const isBariatricDissent = !!document.querySelector('[name="bi_disent_rechaza"]');
+        if (isBariatricDissent) {
+          const rechaza = document.querySelector('[name="bi_disent_rechaza"]');
+          const motivo = document.querySelector('[name="bi_disent_motivo"]');
+          const fechaHora = document.querySelector('[name="bi_disent_fecha_hora"]');
+          const nombreDoc = document.querySelector('[name="bi_disent_nombre_doc"]');
+          const calidad = document.querySelector('[name="bi_disent_calidad"]');
+
+          if (!rechaza?.checked) {
+            showToast('Debe marcar "Rechazo el procedimiento" en el disentimiento.', 'error');
+            rechaza?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (!String(motivo?.value || '').trim()) {
+            showToast('Debe indicar el motivo del disentimiento.', 'error');
+            motivo?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (!String(fechaHora?.value || '').trim()) {
+            showToast('Debe indicar la fecha y hora del disentimiento.', 'error');
+            fechaHora?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (!String(nombreDoc?.value || '').trim()) {
+            showToast('Debe completar nombre y documento en el disentimiento.', 'error');
+            nombreDoc?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+          if (!String(calidad?.value || '').trim()) {
+            showToast('Debe completar la calidad en el disentimiento.', 'error');
+            calidad?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+        } else {
+          const reasonField = document.querySelector('textarea[name="motivo_no_autoriza"]');
+          if (!reasonField || !reasonField.value.trim()) {
+            showToast('Debe explicar el motivo de la no autorización', 'error');
+            if (reasonField) reasonField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
+        }
+      } else {
+        const requiredChecks = document.querySelectorAll('.form-checkboxes input[required]');
+        for (const cb of requiredChecks) {
+          if (!cb.checked) {
+            showToast('Debe aceptar todas las declaraciones obligatorias', 'error');
+            cb.closest('.form-checkbox').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+          }
         }
       }
     }
@@ -341,6 +575,44 @@ function drawSectionBar(doc, text, x, y, w) {
   doc.text(String(text || '').toUpperCase(), x + 1.6, y + 4.1);
 }
 
+function getConsentDocumentMeta(consent) {
+  const id = Number(consent?.id);
+  const byConsent = {
+    3: { codigo: 'CI-DM-001', version: '2.0', fecha: '2026-03-13' }, // Cardiovascular
+    2: { codigo: 'CI-DM-002', version: '2.0', fecha: '2026-03-13' }, // Bariátrica
+    1: { codigo: 'CI-DM-003', version: '2.0', fecha: '2026-03-13' }, // Anestesia
+    4: { codigo: 'CI-URO-003', version: '2.0', fecha: '2026-03-13' }, // Circuncisión
+    5: { codigo: 'CI-DM-004', version: '2.0', fecha: '2026-03-13' }, // Colecistectomía laparoscópica
+    6: { codigo: 'CI-GAS-001', version: '2.0', fecha: '2026-03-13' }, // Colonoscopia
+    7: { codigo: 'CI-GAS-002', version: '2.0', fecha: '2026-03-13' }, // Endoscopia digestiva alta
+    8: { codigo: 'CI-OFT-001', version: '2.0', fecha: '2026-03-13' }, // Extracción extracapsular de cristalino
+    9: { codigo: 'CI-DM-005', version: '2.0', fecha: '2026-03-13' }, // Herniorrafia umbilical
+    10: { codigo: 'CI-URO-016', version: '2.0', fecha: '2026-03-13' }  // Litotricia extracorpórea (ondas de choque)
+  };
+  const specific = byConsent[id] || {};
+  return {
+    codigo: specific.codigo || consent?.codigo || 'N/A',
+    version: specific.version || consent?.version || 'N/A',
+    fecha: specific.fecha || consent?.vigente || 'N/A'
+  };
+}
+
+function resolveControlDocumentalSectionNumber(defaultNumber = 10) {
+  try {
+    const titles = Array.from(document.querySelectorAll('.document-content-box .anx-block-title'));
+    const nums = titles
+      .map((el) => {
+        const m = String(el.textContent || '').trim().match(/^(\d+)\s*\./);
+        return m ? Number(m[1]) : null;
+      })
+      .filter((n) => Number.isFinite(n));
+    if (!nums.length) return defaultNumber;
+    return Math.max(...nums) + 1;
+  } catch {
+    return defaultNumber;
+  }
+}
+
 async function generateAnesthesiaPdfStructured(consent, patient, signaturesPayload) {
   const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
   if (!jsPDF) throw new Error('La libreria jsPDF no se cargo correctamente.');
@@ -356,7 +628,10 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   const q = (name) => document.querySelector(`[name="${name}"]`);
   const gv = (name, fallback = '') => (q(name)?.value || fallback || '').toString().trim();
   const gc = (name) => !!q(name)?.checked;
-  const check = (v) => (v ? '[X]' : '[ ]');
+  const writeVectorCheckLine = (checked, text, options = {}) => {
+    const { x = mL + 1, maxW = uW - 2, fontSize = 7.1, lineH = 3.2 } = options;
+    writeWrapped(`${checked ? '[x]' : '[ ]'} ${String(text || '')}`, { x, maxW, fontSize, lineH });
+  };
   let logoDataUrl = null;
   try {
     const logoImg = new Image();
@@ -420,9 +695,10 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   doc.text('DIRECCION MEDICA Y CIENTIFICA', pageW - mR, y + 5.8, { align: 'right' });
   doc.setFont('helvetica', 'normal');
   doc.text('Cartagena de Indias, Colombia', pageW - mR, y + 8.6, { align: 'right' });
-  y += 12;
+  y += 16;
 
   // Meta row
+  const docMeta = getConsentDocumentMeta(consent);
   const cW = uW / 3;
   drawSectionBar(doc, 'CODIGO', mL, y, cW);
   drawSectionBar(doc, 'VERSION', mL + cW, y, cW);
@@ -433,9 +709,9 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   doc.rect(mL, y + 5.8, cW, 6);
   doc.rect(mL + cW, y + 5.8, cW, 6);
   doc.rect(mL + cW * 2, y + 5.8, cW, 6);
-  doc.text(gv('ax_codigo', 'CI-DM-003') || 'CI-DM-003', mL + 1.2, y + 9.9);
-  doc.text(gv('ax_version', '2.0') || '2.0', mL + cW + 1.2, y + 9.9);
-  doc.text(gv('ax_fecha_doc', '2026-03-13'), mL + cW * 2 + 1.2, y + 9.9);
+  doc.text(gv('ax_codigo', docMeta.codigo) || docMeta.codigo, mL + 1.2, y + 9.9);
+  doc.text(gv('ax_version', docMeta.version) || docMeta.version, mL + cW + 1.2, y + 9.9);
+  doc.text(gv('ax_fecha_doc', docMeta.fecha), mL + cW * 2 + 1.2, y + 9.9);
   y += 18.5;
 
   // Title
@@ -461,8 +737,14 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   drawSectionBar(doc, '2. IDENTIFICACION DE QUIEN OTORGA EL CONSENTIMIENTO', mL, y, uW); y += 9.2;
   doc.setTextColor(15, 23, 42);
   writeWrapped(`Yo: ${gv('ax_nombre_otorga', patient?.nombre || '')}   identificado(a) con: ${gv('ax_doc_otorga', `${patient?.tipoDoc || 'CC'} ${patient?.cedula || ''}`)}`, { fontSize: 7.6, lineH: 3.6 });
-  writeWrapped(`Actuo en nombre de: ${check(gc('ax_mi_mismo'))} Mi mismo(a)   ${check(gc('ax_paciente'))} Del/La paciente: ${gv('ax_paciente_nombre')}   Doc. N: ${gv('ax_paciente_doc')}`, { fontSize: 7.6, lineH: 3.6 });
-  writeWrapped(`Calidad / representacion: ${check(gc('ax_padre'))} Padre/Madre  ${check(gc('ax_tutor'))} Tutor legal  ${check(gc('ax_apoderado'))} Apoderado(a)  ${check(gc('ax_conyuge'))} Conyuge`, { fontSize: 7.6, lineH: 3.6 });
+  writeWrapped('Actuo en nombre de:', { fontSize: 7.6, lineH: 3.6 });
+  writeVectorCheckLine(gc('ax_mi_mismo'), 'Mi mismo(a)', { fontSize: 7.4, lineH: 3.4 });
+  writeVectorCheckLine(gc('ax_paciente'), `Del/La paciente: ${gv('ax_paciente_nombre')}   Doc. N: ${gv('ax_paciente_doc')}`, { fontSize: 7.4, lineH: 3.4 });
+  writeWrapped('Calidad / representacion:', { fontSize: 7.6, lineH: 3.6 });
+  writeVectorCheckLine(gc('ax_padre'), 'Padre/Madre', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_tutor'), 'Tutor legal', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_apoderado'), 'Apoderado(a)', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_conyuge'), 'Conyuge', { fontSize: 7.4, lineH: 3.2 });
   y += 1.6;
 
   // Section 3
@@ -480,16 +762,12 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(6.8);
-  const p4 = [
-    'La anestesia es un estado controlado de inconsciencia, insensibilidad al dolor o relajacion muscular, inducido por medicamentos, con el fin de permitir la realizacion de procedimientos quirurgicos o diagnosticos.',
-    `Los tipos de anestesia a utilizar son: ${check(gc('ax_tipo_general'))} Anestesia general: perdida total de la consciencia y el dolor durante el procedimiento mediante medicamentos intravenosos y/o inhalados. Requiere manejo de la via aerea (intubacion endotraqueal o mascara laringea).`,
-    `${check(gc('ax_tipo_regional'))} Anestesia regional (epidural / raquidea / bloqueos nerviosos): se insensibiliza una region del cuerpo inyectando anestesico local cerca de nervios o la medula espinal. El paciente permanece despierto o con sedacion leve.`,
-    `${check(gc('ax_tipo_sedacion'))} Sedacion / anestesia monitoreada: estado de somnolencia controlada que permite la realizacion del procedimiento con preservacion de la respiracion espontanea.`,
-    'El tipo de anestesia se selecciona segun el procedimiento, las condiciones de salud del paciente y criterio del anestesiologo.'
-  ];
-  p4.forEach((line) => {
-    writeWrapped(line, { fontSize: 7.2, lineH: 3.3 });
-  });
+  writeWrapped('La anestesia es un estado controlado de inconsciencia, insensibilidad al dolor o relajacion muscular, inducido por medicamentos, con el fin de permitir la realizacion de procedimientos quirurgicos o diagnosticos.', { fontSize: 7.2, lineH: 3.3 });
+  writeWrapped('Los tipos de anestesia a utilizar son:', { fontSize: 7.2, lineH: 3.3 });
+  writeVectorCheckLine(gc('ax_tipo_general'), 'Anestesia general: perdida total de la consciencia y el dolor durante el procedimiento mediante medicamentos intravenosos y/o inhalados. Requiere manejo de la via aerea (intubacion endotraqueal o mascara laringea).', { fontSize: 7.1, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_tipo_regional'), 'Anestesia regional (epidural / raquidea / bloqueos nerviosos): se insensibiliza una region del cuerpo inyectando anestesico local cerca de nervios o la medula espinal. El paciente permanece despierto o con sedacion leve.', { fontSize: 7.1, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_tipo_sedacion'), 'Sedacion / anestesia monitoreada: estado de somnolencia controlada que permite la realizacion del procedimiento con preservacion de la respiracion espontanea.', { fontSize: 7.1, lineH: 3.2 });
+  writeWrapped('El tipo de anestesia se selecciona segun el procedimiento, las condiciones de salud del paciente y criterio del anestesiologo.', { fontSize: 7.2, lineH: 3.3 });
   {
     const raw = gv('ax_tipo_anestesia');
     const paras = String(raw || '').split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
@@ -580,7 +858,9 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   drawSectionBar(doc, '7. ALTERNATIVAS AL PROCEDIMIENTO', mL, y, uW); y += 9.2;
   doc.setTextColor(15, 23, 42);
   doc.setFont('helvetica', 'normal');
-  writeWrapped(`${check(gc('ax_alt_1'))} Otro tipo de anestesia   ${check(gc('ax_alt_2'))} Analgesia / sedacion sin anestesia general   ${check(gc('ax_alt_3'))} No realizar procedimiento que requiere anestesia`, { fontSize: 7.2, lineH: 3.3 });
+  writeVectorCheckLine(gc('ax_alt_1'), 'Otro tipo de anestesia', { fontSize: 7.2, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_alt_2'), 'Analgesia / sedacion sin anestesia general', { fontSize: 7.2, lineH: 3.2 });
+  writeVectorCheckLine(gc('ax_alt_3'), 'No realizar procedimiento que requiere anestesia', { fontSize: 7.2, lineH: 3.2 });
   y += 1.2;
 
   // Section 8
@@ -595,7 +875,7 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
     [gc('declara_no_autoriza'), 'No autorizo la realizacion del procedimiento descrito en este consentimiento.']
   ];
   decl.forEach(([ck, txt]) => {
-    writeWrapped(`${check(ck)} ${txt}`, { fontSize: 7.1, lineH: 3.2 });
+    writeVectorCheckLine(!!ck, txt, { fontSize: 7.1, lineH: 3.2 });
     y += 0.8;
   });
   y += 1.4;
@@ -603,12 +883,13 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   // Section 9 (firma/disentimiento condicional)
   const isNoAuth = gc('declara_no_autoriza');
   ensureSpace(isNoAuth ? 72 : 66);
-  drawSectionBar(doc, isNoAuth ? '9. DISENTIMIENTO - Rechazo o Revocacion del Consentimiento' : '9. FIRMAS DE CONSENTIMIENTO', mL, y, uW); y += 8.4;
+  drawSectionBar(doc, isNoAuth ? '9. DISENTIMIENTO - Rechazo del Consentimiento' : '9. FIRMAS DE CONSENTIMIENTO', mL, y, uW); y += 8.4;
   if (isNoAuth) {
     y += 0.8;
     writeWrapped(`Yo, (nombre y documento): ${gv('ax_disent_nombre_doc')}`, { fontSize: 7, lineH: 3.3 });
     writeWrapped(`en calidad de: ${gv('ax_disent_calidad', 'Paciente o Rep. Legal')}`, { fontSize: 7, lineH: 3.3 });
-    writeWrapped(`Declaro que: ${check(gc('ax_disent_rechaza'))} Rechazo el procedimiento`, { fontSize: 7, lineH: 3.3 });
+    writeWrapped('Declaro que:', { fontSize: 7, lineH: 3.3 });
+    writeVectorCheckLine(gc('ax_disent_rechaza'), 'Rechazo el procedimiento', { fontSize: 7, lineH: 3.2 });
     {
       const motivoRaw = gv('ax_disent_motivo');
       const paras = String(motivoRaw || '')
@@ -680,9 +961,10 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   doc.text('Nombre completo | Registro Medico | Especialidad', pageW / 2, y + 21.2, { align: 'center' });
   y += medicoBoxH + 1.8;
 
-  // Section 10
+  // Section 10 (o siguiente según plantilla)
+  const controlDocNumber = resolveControlDocumentalSectionNumber(10);
   ensureSpace(20);
-  drawSectionBar(doc, '10. CONTROL DOCUMENTAL', mL, y, uW); y += 8.4;
+  drawSectionBar(doc, `${controlDocNumber}. CONTROL DOCUMENTAL`, mL, y, uW); y += 8.4;
   const rows = [
     `Elaborado por: ${gv('ax_elaborado_por', 'Dr. Erick David Castro Reyes - Director Medico y Cientifico - Medihelp Services')}`,
     `Aprobado por: ${gv('ax_aprobado_por', 'Jefatura de Anestesiologia - Medihelp Services')}`,
@@ -704,6 +986,398 @@ async function generateAnesthesiaPdfStructured(consent, patient, signaturesPaylo
   });
 
   // Footer
+  doc.setFontSize(5.5);
+  doc.setTextColor(120, 120, 120);
+  doc.text('Conforme al Art. 15 Ley 23/1981, Decreto 3380/1981 y Resolucion 13437/1991. El medico tratante conserva copia firmada.', pageW / 2, pageH - 4.5, { align: 'center' });
+  doc.text('Pagina 1', pageW - mR, pageH - 4.5, { align: 'right' });
+
+  return doc.output('blob');
+}
+
+async function generateStandardStyledPdf(consent, patient, signaturesPayload) {
+  const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+  if (!jsPDF) throw new Error('La libreria jsPDF no se cargo correctamente.');
+  const doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  const pageW = doc.internal.pageSize.getWidth();
+  const pageH = doc.internal.pageSize.getHeight();
+  const mL = 10;
+  const mR = 10;
+  const uW = pageW - mL - mR;
+  let y = 9;
+
+  const q = (name) => document.querySelector(`[name="${name}"]`);
+  const gv = (name, fallback = '') => (q(name)?.value || fallback || '').toString().trim();
+  const gc = (name) => !!q(name)?.checked;
+  const writeVectorCheckLine = (checked, text, options = {}) => {
+    const { x = mL + 1, maxW = uW - 2, fontSize = 7.1, lineH = 3.2 } = options;
+    writeWrapped(`${checked ? '[x]' : '[ ]'} ${String(text || '')}`, { x, maxW, fontSize, lineH });
+  };
+  let logoDataUrl = null;
+  try {
+    const logoImg = new Image();
+    logoImg.crossOrigin = 'anonymous';
+    logoDataUrl = await new Promise((resolve, reject) => {
+      logoImg.onload = () => {
+        const cvs = document.createElement('canvas');
+        cvs.width = logoImg.naturalWidth;
+        cvs.height = logoImg.naturalHeight;
+        const ctx = cvs.getContext('2d');
+        ctx.drawImage(logoImg, 0, 0);
+        resolve(cvs.toDataURL('image/png'));
+      };
+      logoImg.onerror = () => reject(new Error('Logo no cargado'));
+      logoImg.src = '/assets/descarga.png';
+    });
+  } catch {
+    logoDataUrl = null;
+  }
+
+  const ensureSpace = (needed = 8) => {
+    if (y + needed <= pageH - 12) return;
+    doc.addPage();
+    y = 10;
+  };
+  const writeWrapped = (text, options = {}) => {
+    const {
+      x = mL + 1,
+      maxW = uW - 2,
+      fontSize = 7.8,
+      lineH = 3.7
+    } = options;
+    doc.setTextColor(15, 23, 42);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(fontSize);
+    const lines = doc.splitTextToSize(String(text || ''), maxW);
+    ensureSpace(lines.length * lineH + 2.2);
+    doc.text(lines, x, y);
+    y += lines.length * lineH;
+  };
+
+  // Header de estilo (igual lenguaje visual del consentimiento 1)
+  doc.setFillColor(0, 131, 143);
+  doc.rect(0, 0, pageW, 1.8, 'F');
+  doc.setDrawColor(0, 131, 143);
+  doc.setLineWidth(0.2);
+  doc.line(mL, y + 9, pageW - mR, y + 9);
+  if (logoDataUrl) {
+    doc.addImage(logoDataUrl, 'PNG', mL, y + 0.8, 34, 8.2);
+  } else {
+    doc.setTextColor(0, 96, 100);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(15);
+    doc.text('MEDIHELP', mL + 8, y + 4);
+    doc.setFontSize(6.5);
+    doc.setFont('helvetica', 'normal');
+    doc.text('COMPLEJO DE SALUD', mL + 8, y + 7);
+  }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7);
+  doc.text('CLINICA MEDIHELP SERVICES', pageW - mR, y + 2.8, { align: 'right' });
+  doc.text('DIRECCION MEDICA Y CIENTIFICA', pageW - mR, y + 5.8, { align: 'right' });
+  doc.setFont('helvetica', 'normal');
+  doc.text('Cartagena de Indias, Colombia', pageW - mR, y + 8.6, { align: 'right' });
+  y += 12;
+
+  // Meta row (dinámico por consentimiento)
+  const docMeta = getConsentDocumentMeta(consent);
+  const cW = uW / 3;
+  drawSectionBar(doc, 'CODIGO', mL, y, cW);
+  drawSectionBar(doc, 'VERSION', mL + cW, y, cW);
+  drawSectionBar(doc, 'FECHA', mL + cW * 2, y, cW);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.8);
+  doc.setTextColor(30, 41, 59);
+  doc.rect(mL, y + 5.8, cW, 6);
+  doc.rect(mL + cW, y + 5.8, cW, 6);
+  doc.rect(mL + cW * 2, y + 5.8, cW, 6);
+  doc.text(docMeta.codigo, mL + 1.2, y + 9.9);
+  doc.text(docMeta.version, mL + cW + 1.2, y + 9.9);
+  doc.text(docMeta.fecha, mL + cW * 2 + 1.2, y + 9.9);
+  y += 18.5;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(13.5);
+  doc.setTextColor(20, 83, 87);
+  doc.text(String(consent?.titulo || 'CONSENTIMIENTO INFORMADO').toUpperCase(), pageW / 2, y, { align: 'center' });
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.8);
+  doc.setTextColor(71, 85, 105);
+  const pdfSub = consent?.subtituloDoc
+    ? `${consent.subtituloDoc} — Clinica Medihelp Services`
+    : 'Clinica Medihelp Services';
+  doc.text(pdfSub, pageW / 2, y + 4.2, { align: 'center' });
+  y += 10.5;
+
+  // 1
+  ensureSpace(12);
+  drawSectionBar(doc, '1. LUGAR Y FECHA', mL, y, uW); y += 9.2;
+  writeWrapped(`Ciudad: ${gv('ci_ciudad', 'Cartagena de Indias - Bolivar')}   Fecha y hora: ${gv('ci_fecha_hora')}`, { fontSize: 7.8, lineH: 3.7 });
+  y += 1.6;
+
+  // 2
+  ensureSpace(16);
+  drawSectionBar(doc, '2. IDENTIFICACION DE QUIEN OTORGA EL CONSENTIMIENTO', mL, y, uW); y += 9.2;
+  writeWrapped(`Yo: ${gv('ci_nombre_otorga', patient?.nombre || '')}   identificado(a) con: ${gv('ci_doc_otorga', `${patient?.tipoDoc || 'CC'} ${patient?.cedula || ''}`)}`, { fontSize: 7.6, lineH: 3.6 });
+  writeWrapped('Actuo en nombre de:', { fontSize: 7.6, lineH: 3.6 });
+  writeVectorCheckLine(gc('ci_mi_mismo'), 'Mi mismo(a)', { fontSize: 7.4, lineH: 3.3 });
+  writeVectorCheckLine(gc('ci_paciente'), `Del/La paciente: ${gv('ci_paciente_nombre')}   Doc. N: ${gv('ci_paciente_doc')}`, { fontSize: 7.4, lineH: 3.3 });
+  writeWrapped('Calidad / representacion:', { fontSize: 7.6, lineH: 3.6 });
+  writeVectorCheckLine(gc('ci_padre'), 'Padre/Madre', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ci_tutor'), 'Tutor legal', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ci_apoderado'), 'Apoderado(a)', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ci_conyuge'), 'Conyuge', { fontSize: 7.4, lineH: 3.2 });
+  writeVectorCheckLine(gc('ci_familiar'), 'Familiar primer grado', { fontSize: 7.4, lineH: 3.2 });
+  y += 1.6;
+
+  // 3
+  ensureSpace(14);
+  drawSectionBar(doc, '3. INFORMACION MEDICA RECIBIDA', mL, y, uW); y += 9.2;
+  writeWrapped(`Doctor(a) tratante: ${gv('medico')}`, { fontSize: 7.6, lineH: 3.6 });
+  writeWrapped(`Enfermedad / diagnostico: ${gv('diagnostico')}`, { fontSize: 7.6, lineH: 3.6 });
+  writeWrapped(`Procedimiento a realizar: ${gv('servicio')}`, { fontSize: 7.6, lineH: 3.6 });
+  y += 1.4;
+
+  // 4+ contenido del consentimiento: respetar puntos reales del formulario web
+  ensureSpace(14);
+  let section4Title = '4. DESCRIPCION DEL PROCEDIMIENTO';
+  let declarationSectionTitle = '9. DECLARACION DE ENTENDIMIENTO Y ACEPTACION';
+  let signaturesSectionTitle = '10. FIRMAS DE CONSENTIMIENTO';
+  const contentRoot = document.querySelector('.document-content-box');
+  if (contentRoot) {
+    const titleEls = Array.from(contentRoot.querySelectorAll('.anx-block-title'));
+    const normalizeHeading = (txt) => String(txt || '')
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toUpperCase()
+      .trim();
+    const parsedTitles = titleEls.map((el) => {
+      const text = String(el.textContent || '').trim();
+      const m = text.match(/^(\d+)\s*\./);
+      const n = m ? Number(m[1]) : null;
+      return { el, text, n, upper: normalizeHeading(text) };
+    });
+
+    const declarationSection = parsedTitles.find((t) =>
+      t.upper.includes('DECLARACION DE ENTENDIMIENTO') ||
+      t.upper.includes('DECLARATION OF UNDERSTANDING'));
+    const signaturesSection = parsedTitles.find((t) =>
+      t.upper.includes('FIRMAS DE CONSENTIMIENTO') ||
+      t.upper.includes('SIGNATURES OF CONSENT') ||
+      t.upper.includes('DISENTIMIENTO') ||
+      t.upper.includes('INFORMED DISSENT'));
+    const section4 = parsedTitles.find((t) => t.n === 4);
+    if (section4?.text) section4Title = section4.text;
+    if (declarationSection?.text) declarationSectionTitle = declarationSection.text;
+    if (signaturesSection?.text) signaturesSectionTitle = signaturesSection.text;
+
+    drawSectionBar(doc, section4Title, mL, y, uW); y += 9.2;
+
+    const declarationNum = declarationSection?.n ?? Number.POSITIVE_INFINITY;
+    const signaturesNum = signaturesSection?.n ?? Number.POSITIVE_INFINITY;
+    const stopAt = Math.min(declarationNum, signaturesNum);
+
+    const sourceControls = Array.from(contentRoot.querySelectorAll('input[name], textarea[name], select[name]'));
+    const findSourceControl = (name) => sourceControls.find((c) => c.name === name) || null;
+
+    const renderSectionContent = (sectionRoot) => {
+      sectionRoot.querySelectorAll('[style*="display:none"], canvas, button, svg, .anx-firmas-box').forEach((el) => el.remove());
+      const controls = Array.from(sectionRoot.querySelectorAll('input[name], textarea[name], select[name]'));
+      controls.forEach((el) => {
+        const src = findSourceControl(el.name) || el;
+        const t = ((src?.type || el.type || '') + '').toLowerCase();
+        let textVal = '';
+        if (t === 'checkbox') {
+          textVal = src.checked ? '[X] ' : '[ ] ';
+        } else if (el.tagName === 'SELECT') {
+          const idx = src.selectedIndex ?? -1;
+          textVal = idx >= 0 ? String(src.options[idx]?.text || '').trim() : '';
+        } else {
+          textVal = String(src.value || '').trim();
+        }
+        el.replaceWith(document.createTextNode(textVal));
+      });
+      const renderPdfTable = (tableEl) => {
+        const rows = Array.from(tableEl.querySelectorAll('tr'))
+          .map((tr) => Array.from(tr.querySelectorAll('th,td')).map((c) => String(c.textContent || '').trim()))
+          .filter((r) => r.length);
+        if (!rows.length) return;
+        const colCount = Math.max(...rows.map((r) => r.length));
+        const normRows = rows.map((r) => {
+          const out = r.slice();
+          while (out.length < colCount) out.push('');
+          return out;
+        });
+        const colW = uW / colCount;
+        normRows.forEach((row, rIdx) => {
+          const isHeader = rIdx === 0;
+          const cellLines = row.map((txt) => doc.splitTextToSize(txt || ' ', colW - 2.2));
+          const maxLines = Math.max(1, ...cellLines.map((l) => l.length));
+          const rowH = maxLines * 3 + 2.2;
+          ensureSpace(rowH + 1.2);
+          row.forEach((_, cIdx) => {
+            const x = mL + cIdx * colW;
+            if (isHeader) {
+              doc.setFillColor(15, 118, 110);
+              doc.rect(x, y, colW, rowH, 'F');
+              doc.setTextColor(255, 255, 255);
+              doc.setFont('helvetica', 'bold');
+            } else {
+              doc.setTextColor(30, 41, 59);
+              doc.setFont('helvetica', 'normal');
+            }
+            doc.setDrawColor(210, 219, 230);
+            doc.rect(x, y, colW, rowH);
+            doc.setFontSize(6.8);
+            doc.text(cellLines[cIdx], x + 1.1, y + 2.4, { maxWidth: colW - 2.2 });
+          });
+          y += rowH;
+        });
+        y += 1.2;
+      };
+
+      const tableTokens = [];
+      Array.from(sectionRoot.querySelectorAll('table')).forEach((table, idx) => {
+        const token = `__PDF_TABLE_${idx}__`;
+        tableTokens.push({ token, table: table.cloneNode(true) });
+        table.replaceWith(document.createTextNode(`\n${token}\n`));
+      });
+
+      sectionRoot.querySelectorAll('li').forEach((li) => li.prepend(document.createTextNode('• ')));
+      sectionRoot.querySelectorAll('p, div, h1, h2, h3, h4, h5, h6, ul, ol').forEach((el) => el.append(document.createTextNode('\n')));
+      const text = String(sectionRoot.textContent || '')
+        .replace(/[ \t]+\n/g, '\n')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim();
+      const lines = text.split('\n').map((s) => s.trim()).filter(Boolean);
+      lines.forEach((line) => {
+        const tk = tableTokens.find((t) => t.token === line);
+        if (tk) {
+          renderPdfTable(tk.table);
+        } else {
+          writeWrapped(line, { fontSize: 7.1, lineH: 3.3 });
+        }
+      });
+    };
+
+    parsedTitles
+      .filter((t) => Number.isFinite(t.n) && t.n >= 4 && t.n < stopAt)
+      .forEach((section) => {
+        // La sección 4 ya quedó como cabecera principal; no repetir su título dentro del contenido.
+        if (section.n >= 5) {
+          ensureSpace(10);
+          drawSectionBar(doc, section.text, mL, y, uW);
+          y += 8.6;
+        }
+        const fragment = document.createElement('div');
+        let node = section.el.nextSibling;
+        while (node) {
+          if (node.nodeType === 1 && node.classList?.contains('anx-block-title')) break;
+          fragment.appendChild(node.cloneNode(true));
+          node = node.nextSibling;
+        }
+        renderSectionContent(fragment);
+        y += 0.8;
+      });
+  } else {
+    drawSectionBar(doc, section4Title, mL, y, uW); y += 9.2;
+    writeWrapped('Contenido no disponible.', { fontSize: 7.1, lineH: 3.3 });
+  }
+  y += 1.6;
+
+  // 9 (declaraciones)
+  ensureSpace(12);
+  drawSectionBar(doc, declarationSectionTitle, mL, y, uW); y += 9.2;
+  const decl = [
+    [gc('declara_informado'), 'Declaro que he leido el presente documento y he entendido la informacion suministrada.'],
+    [gc('declara_revocar') || gc('declara_revocacion_info'), 'Entiendo que puedo revocar este consentimiento en cualquier momento antes del procedimiento.'],
+    [gc('declara_voluntario'), 'Otorgo mi consentimiento de manera libre, consciente, informada y voluntaria.'],
+    [gc('declara_no_autoriza'), 'No autorizo la realizacion del procedimiento descrito en este consentimiento.']
+  ];
+  decl.forEach(([ck, txt]) => {
+    writeVectorCheckLine(!!ck, txt, { fontSize: 7.1, lineH: 3.2 });
+    y += 0.5;
+  });
+  y += 1.2;
+
+  // 10 firmas
+  ensureSpace(68);
+  drawSectionBar(doc, signaturesSectionTitle, mL, y, uW); y += 8.4;
+  const colW = uW / 3;
+  const sigImgH = 21;
+  const rowH = 46;
+  ['Paciente / Rep. Legal', 'Testigo 1', 'Testigo 2'].forEach((t, i) => {
+    const x = mL + i * colW;
+    doc.setFillColor(216, 236, 235);
+    doc.rect(x, y, colW, 4.5, 'F');
+    doc.rect(x, y, colW, rowH);
+    doc.setTextColor(15, 118, 110);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(7);
+    doc.text(t, x + colW / 2, y + 3.2, { align: 'center' });
+  });
+  const pSig = signaturesPayload?.axPacienteSignSlot || '';
+  const t1Sig = signaturesPayload?.axTestigo1SignSlot || '';
+  const t2Sig = signaturesPayload?.axTestigo2SignSlot || '';
+  if (pSig) doc.addImage(pSig, 'PNG', mL + 2, y + 7, colW - 4, sigImgH);
+  if (t1Sig) doc.addImage(t1Sig, 'PNG', mL + colW + 2, y + 7, colW - 4, sigImgH);
+  if (t2Sig) doc.addImage(t2Sig, 'PNG', mL + colW * 2 + 2, y + 7, colW - 4, sigImgH);
+  const pNombreLine = gv('bi_firma_paciente_nombre', gv('ax_firma_paciente_nombre', ''));
+  if (pNombreLine) {
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(5.6);
+    doc.setTextColor(30, 41, 59);
+    const nameLines = String(pNombreLine).split(/\r?\n/).flatMap((para) => {
+      const t = para.trim();
+      return t ? doc.splitTextToSize(t, colW - 4) : [];
+    });
+    doc.text(nameLines.slice(0, 6), mL + colW / 2, y + 7 + sigImgH + 1.2, { align: 'center', lineHeightFactor: 1.22 });
+  }
+  doc.setFontSize(6.2);
+  doc.setTextColor(15, 118, 110);
+  doc.text('Nombre y documento de identidad', mL + colW / 2, y + 41.5, { align: 'center' });
+  doc.text('Nombre y vinculo/parentesco', mL + colW + colW / 2, y + 41.5, { align: 'center' });
+  doc.text('Nombre y documento de identidad', mL + colW * 2 + colW / 2, y + 41.5, { align: 'center' });
+  y += rowH + 1;
+
+  const medicoBoxH = 23;
+  doc.setFillColor(216, 236, 235);
+  doc.rect(mL, y, uW, 4.5, 'F');
+  doc.rect(mL, y, uW, medicoBoxH);
+  doc.setTextColor(15, 118, 110);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(7.3);
+  doc.text('Medico Tratante', pageW / 2, y + 3.1, { align: 'center' });
+  const mSig = document.querySelector('#axMedicoSignSlot img')?.src || '';
+  if (mSig) doc.addImage(mSig, 'PNG', mL + uW * 0.18, y + 5.3, uW * 0.64, 13.5);
+  doc.setFontSize(6.2);
+  doc.text('Nombre completo | Registro Medico | Especialidad', pageW / 2, y + 21.2, { align: 'center' });
+  y += medicoBoxH + 1.8;
+
+  // Control documental al final (numeración dinámica según consentimiento)
+  const controlDocNumber = resolveControlDocumentalSectionNumber(10);
+  ensureSpace(20);
+  drawSectionBar(doc, `${controlDocNumber}. CONTROL DOCUMENTAL`, mL, y, uW); y += 8.4;
+  const rows = [
+    `Elaborado por: ${gv('ax_elaborado_por', 'Dr. Erick David Castro Reyes - Director Medico y Cientifico - Medihelp Services')}`,
+    `Aprobado por: ${gv('ax_aprobado_por', 'Jefatura de Anestesiologia - Medihelp Services')}`,
+    `Revisado por: ${gv('ax_revisado_por', 'Dr. Erick David Castro Reyes - Director Medico y Cientifico - Medihelp Services')}`,
+    `F. Aprobacion: ${gv('ax_fecha_aprobacion', '2026-03-13')}`,
+    `Proxima revision: ${gv('ax_proxima_revision', '3 anos desde la fecha de aprobacion')}`,
+    `Alineado a: ${gv('ax_alineado_a', 'Joint Commission International 8a Edicion - Ley 23 de 1981 Art. 15 - Decreto 3380 de 1981 - Resolucion 13437 de 1991')}`
+  ];
+  rows.forEach((r, i) => {
+    ensureSpace(5);
+    if (i % 2 === 0) {
+      doc.setFillColor(242, 247, 247);
+      doc.rect(mL, y - 3.2, uW, 4.5, 'F');
+    }
+    doc.setFontSize(7.1);
+    doc.setTextColor(30, 41, 59);
+    doc.text(r, mL + 1, y);
+    y += 4.5;
+  });
+
   doc.setFontSize(5.5);
   doc.setTextColor(120, 120, 120);
   doc.text('Conforme al Art. 15 Ley 23/1981, Decreto 3380/1981 y Resolucion 13437/1991. El medico tratante conserva copia firmada.', pageW / 2, pageH - 4.5, { align: 'center' });
@@ -772,537 +1446,37 @@ async function confirmSignature() {
     }
   }
 
-  try {
-    const form = document.getElementById('consentForm');
-    const formData = new FormData(form);
-    const datos = Object.fromEntries(formData.entries());
-
-    form.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-      if (cb.name) datos[cb.name] = cb.checked ? 'on' : '';
-    });
-
-    // Recoger campos disabled/readonly que FormData ignora
-    form.querySelectorAll('input[readonly], input[disabled], select[disabled], textarea[readonly], textarea[disabled]').forEach(el => {
-      if (el.name && !datos[el.name]) datos[el.name] = el.value;
-    });
-
-    // Normalizar género para el PDF
-    if (datos.genero) {
-      const g = datos.genero.trim().toUpperCase();
-      if (g === 'M' || g.startsWith('MASC')) datos.genero = 'MASCULINO';
-      else if (g === 'F' || g.startsWith('FEM')) datos.genero = 'FEMENINO';
-      else datos.genero = 'OTRO';
-    }
-
-    const inlineFields = [];
-    document.querySelectorAll('.document-content-box .form-inline-field').forEach(field => {
-      const label = field.querySelector('label')?.textContent || '';
-      const input = field.querySelector('input, textarea, select');
-      inlineFields.push({ label, value: input ? input.value || '---' : '---' });
-    });
-
-    const lang = currentLanguage;
-    const s = (typeof UI_STRINGS !== 'undefined') ? UI_STRINGS[lang] : {};
-    const formDef = lang === 'en'
-      ? ((typeof FORMULARIOS_EN !== 'undefined') ? (FORMULARIOS_EN[getConsentFormId(consent)] || FORMULARIOS?.[getConsentFormId(consent)]) : FORMULARIOS?.[getConsentFormId(consent)])
-      : ((typeof FORMULARIOS !== 'undefined') ? FORMULARIOS[getConsentFormId(consent)] : null);
-    const formTitle = formDef?.titulo || consent.titulo;
-
-    const contentBox = document.querySelector('.document-content-box');
-    let contentText = '';
-    if (contentBox) {
-      const tempDiv = document.createElement('div');
-      tempDiv.innerHTML = contentBox.innerHTML;
-      tempDiv.querySelectorAll('.form-inline-field').forEach(f => f.remove());
-      contentText = tempDiv.textContent.replace(/\n{3,}/g, '\n\n').trim();
-    }
-
-    // Cargar logo como data URL completo para jsPDF
-    let logoDataUrl = null;
+  // Todos los demás consentimientos: usar estilo visual del consentimiento 1.
+  if (Number(consent.id) !== 1) {
     try {
-      const logoImg = new Image();
-      logoImg.crossOrigin = 'anonymous';
-      logoDataUrl = await new Promise((resolve, reject) => {
-        logoImg.onload = () => {
-          const cvs = document.createElement('canvas');
-          cvs.width = logoImg.naturalWidth;
-          cvs.height = logoImg.naturalHeight;
-          const ctx = cvs.getContext('2d');
-          ctx.drawImage(logoImg, 0, 0);
-          resolve(cvs.toDataURL('image/png'));
-        };
-        logoImg.onerror = () => reject('Logo no cargado');
-        logoImg.src = '/assets/descarga.png';
+      const pdfBlob = await generateStandardStyledPdf(consent, patient, signaturesPayload);
+      const pdfBase64 = await blobToBase64(pdfBlob);
+      await api('POST', '/api/sign', {
+        cedula: patient.cedula,
+        consentId: parseInt(consentId),
+        pdfBase64,
+        titulo: consent.titulo,
+        signatures: signaturesPayload
       });
-    } catch (e) { console.warn('No se pudo cargar el logo:', e); }
 
-    // ===== GENERAR PDF =====
-    const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-    if (!jsPDF) throw new Error('La libreria jsPDF no se cargo correctamente.');
-    const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const mL = 6, mR = 6, mTop = 8;
-    const uW = pageW - mL - mR;
-    let y = mTop;
-    let pageCount = 1;
-
-    // Colores corporativos
-    const teal = [0, 131, 143];
-    const tealDark = [0, 105, 114];
-    const darkText = [33, 33, 33];
-    const grayText = [100, 100, 100];
-    const lightGray = [230, 230, 230];
-
-    function checkPage(needed) {
-      if (y + needed > pageH - 22) {
-        doc.addPage();
-        pageCount++;
-        y = mTop;
-        drawHeaderStripe();
-      }
+      if (typeof clearCurrentFormDraft === 'function') clearCurrentFormDraft('consent');
+      showToast('Consentimiento firmado y guardado exitosamente');
+      document.getElementById('signatureSection').style.display = 'none';
+      document.getElementById('signedBanner').style.display = 'flex';
+      document.getElementById('signedDate').textContent = 'Firmado el ' + new Date().toLocaleString('es-CO');
+      document.querySelectorAll('#consentForm input, #consentForm textarea, #consentForm select').forEach(el => {
+        el.readOnly = true;
+        el.disabled = true;
+      });
+      setTimeout(() => { window.location.assign('paciente.html'); }, 2500);
+      return;
+    } catch (err) {
+      console.error('Error al firmar consentimiento:', err);
+      showToast('Error al generar el documento: ' + err.message, 'error');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Firmar y generar PDF';
+      return;
     }
-
-    function drawHeaderStripe() {
-      doc.setFillColor(teal[0], teal[1], teal[2]);
-      doc.rect(0, 0, pageW, 1.8, 'F');
-    }
-
-    function sectionTitle(text) {
-      checkPage(9);
-      doc.setFillColor(teal[0], teal[1], teal[2]);
-      doc.rect(mL, y - 0.6, uW, 4.8, 'F');
-      doc.setFontSize(7.2);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text(text.toUpperCase(), mL + 1.2, y + 2.8);
-      y += 5.6;
-      doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.setLineWidth(0.15);
-      doc.line(mL, y, pageW - mR, y);
-      y += 1.8;
-    }
-
-    function fieldRow(label, value, x, maxW) {
-      const startX = x || mL;
-      const fieldW = maxW || uW;
-      checkPage(5.5);
-      doc.setFontSize(6.3);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(grayText[0], grayText[1], grayText[2]);
-      doc.text(label, startX, y);
-      const labelW = doc.getTextWidth(label) + 1.5;
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(darkText[0], darkText[1], darkText[2]);
-      doc.setFontSize(6.6);
-      const lines = doc.splitTextToSize(value || '---', fieldW - labelW);
-      doc.text(lines, startX + labelW, y);
-      y += lines.length * 2.9 + 1;
-    }
-
-    function twoColFields(left, right) {
-      const halfW = uW / 2 - 3;
-      const savedY = y;
-      fieldRow(left.label, left.value, mL, halfW);
-      const leftEndY = y;
-      y = savedY;
-      fieldRow(right.label, right.value, mL + uW / 2 + 3, halfW);
-      const rightEndY = y;
-      y = Math.max(leftEndY, rightEndY);
-    }
-
-    function wrappedText(text, fontSize, bold) {
-      doc.setFontSize(fontSize || 6.4);
-      doc.setFont('helvetica', bold ? 'bold' : 'normal');
-      doc.setTextColor(50, 50, 50);
-      const lines = doc.splitTextToSize(text, uW);
-      for (const line of lines) {
-        checkPage(3.7);
-        doc.text(line, mL, y);
-        y += fontSize ? fontSize * 0.38 : 2.7;
-      }
-      y += 0.7;
-    }
-
-    function declCheckbox(checked, text, danger) {
-      checkPage(10);
-      const boxSize = 3.5;
-      const boxY = y - 2.8;
-      doc.setDrawColor(danger ? 200 : 0, danger ? 50 : 131, danger ? 50 : 143);
-      doc.setLineWidth(0.4);
-      doc.roundedRect(mL, boxY, boxSize, boxSize, 0.6, 0.6, 'S');
-      if (checked) {
-        doc.setFillColor(danger ? 200 : 0, danger ? 50 : 131, danger ? 50 : 143);
-        doc.roundedRect(mL + 0.5, boxY + 0.5, boxSize - 1, boxSize - 1, 0.4, 0.4, 'F');
-        doc.setDrawColor(255, 255, 255);
-        doc.setLineWidth(0.5);
-        doc.line(mL + 0.9, boxY + 1.7, mL + 1.5, boxY + 2.6);
-        doc.line(mL + 1.5, boxY + 2.6, mL + 2.8, boxY + 1.1);
-      }
-      doc.setFontSize(8);
-      doc.setFont('helvetica', danger ? 'bold' : 'normal');
-      doc.setTextColor(danger ? 180 : 50, danger ? 30 : 50, danger ? 30 : 50);
-      const txtLines = doc.splitTextToSize(text, uW - boxSize - 4);
-      doc.text(txtLines, mL + boxSize + 3, y);
-      y += txtLines.length * 3.8 + 2;
-    }
-
-    // ===================================================================
-    // PAGINA 1 — ENCABEZADO CON LOGO + TABLA DE CODIGO
-    // ===================================================================
-    drawHeaderStripe();
-    y = 8;
-
-    // Logo a la izquierda
-    if (logoDataUrl) {
-      try {
-        doc.addImage(logoDataUrl, 'PNG', mL, y, 52, 14);
-      } catch (e) {
-        console.warn('No se pudo insertar el logo:', e);
-      }
-    }
-
-    // Tabla de código/versión/vigente en la esquina superior derecha
-    const tblW = 48, tblRowH = 5.2, tblX = pageW - mR - tblW, tblY = 6;
-    const consentMeta = consent;
-    if (consentMeta.codigo || consentMeta.version || consentMeta.vigente) {
-      doc.setDrawColor(teal[0], teal[1], teal[2]);
-      doc.setLineWidth(0.4);
-      // Fila 1: Código
-      doc.setFillColor(0, 131, 143);
-      doc.rect(tblX, tblY, tblW, tblRowH, 'FD');
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(255, 255, 255);
-      doc.text((lang === 'en' ? 'Code: ' : 'Código: ') + (consentMeta.codigo || '---'), tblX + 2, tblY + 3.6);
-      // Fila 2: Versión
-      doc.setFillColor(245, 250, 250);
-      doc.rect(tblX, tblY + tblRowH, tblW, tblRowH, 'FD');
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(darkText[0], darkText[1], darkText[2]);
-      doc.text((lang === 'en' ? 'Version N.° ' : 'Versión N.° ') + (consentMeta.version || '---'), tblX + 2, tblY + tblRowH + 3.6);
-      // Fila 3: Vigente
-      doc.setFillColor(245, 250, 250);
-      doc.rect(tblX, tblY + tblRowH * 2, tblW, tblRowH, 'FD');
-      doc.setFontSize(7);
-      doc.text((lang === 'en' ? 'Effective: ' : 'Vigente: ') + (consentMeta.vigente || '---'), tblX + 2, tblY + tblRowH * 2 + 3.6);
-    }
-
-    // Línea divisoria debajo del encabezado
-    y = 25;
-    doc.setDrawColor(teal[0], teal[1], teal[2]);
-    doc.setLineWidth(0.6);
-    doc.line(mL, y, pageW - mR, y);
-    y += 5;
-
-    // Titulo del consentimiento
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(tealDark[0], tealDark[1], tealDark[2]);
-    const titleLines = doc.splitTextToSize(formTitle, uW);
-    doc.text(titleLines, mL, y);
-    y += titleLines.length * 5.5 + 1;
-
-    doc.setFontSize(7.5);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(grayText[0], grayText[1], grayText[2]);
-    doc.text(s.pdfSubtitle || 'Clinica Medihelp Services - Formulario digital de consentimiento informado', mL, y);
-    y += 7;
-
-    // ===================================================================
-    // DATOS DEL PACIENTE (dos columnas)
-    // ===================================================================
-    sectionTitle(s.patientData || 'Datos del Paciente');
-
-    doc.setFillColor(248, 250, 252);
-    doc.roundedRect(mL, y - 2, uW, 28, 1.5, 1.5, 'F');
-    doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
-    doc.setLineWidth(0.2);
-    doc.roundedRect(mL, y - 2, uW, 28, 1.5, 1.5, 'S');
-    const boxPad = 3;
-    y += boxPad - 1;
-    const datosStartX = mL + boxPad;
-    const halfW = (uW - boxPad * 2) / 2 - 2;
-
-    let savedY = y;
-    fieldRow(s.pdfName || 'Nombre:', patient.nombre, datosStartX, halfW);
-    fieldRow(s.pdfDate || 'Fecha:', datos.fecha || '---', datosStartX, halfW);
-    fieldRow(s.pdfGender || 'Genero:', datos.genero || '---', datosStartX, halfW);
-    const leftEndY = y;
-
-    y = savedY;
-    const rightStartX = mL + uW / 2 + 2;
-    fieldRow(s.pdfId || 'Cedula:', patient.cedula, rightStartX, halfW);
-    fieldRow(s.pdfAge || 'Edad:', (datos.edad || '---') + ' ' + (s.pdfAgeUnit || 'anios'), rightStartX, halfW);
-    fieldRow(s.pdfPhone || 'Telefono:', datos.telefono || '---', rightStartX, halfW);
-    y = Math.max(leftEndY, y);
-
-    y = (mL + boxPad - 1 + savedY - (mL + boxPad - 1)) + 28 + mL - (mL + boxPad - 1) - 2 + boxPad;
-    y = savedY - boxPad + 1 + 28 + 2;
-    y += 4;
-
-    // ===================================================================
-    // INFORMACION MEDICA (dos columnas)
-    // ===================================================================
-    sectionTitle(s.pdfMedInfo || 'Informacion Medica');
-    const medStartY = y;
-    fieldRow(s.pdfDiagnosis || 'Diagnostico:', datos.diagnostico || '---', mL, uW / 2 - 3);
-    const medLeftEnd = y;
-    y = medStartY;
-    fieldRow(s.pdfDoctor || 'Medico tratante:', datos.medico || '---', mL + uW / 2 + 3, uW / 2 - 3);
-    y = Math.max(medLeftEnd, y);
-    fieldRow(s.pdfService || 'Servicio:', datos.servicio || '---');
-    y += 4;
-
-    // ===================================================================
-    // CONTENIDO DEL CONSENTIMIENTO
-    // ===================================================================
-    sectionTitle(s.pdfContent || 'Contenido del Consentimiento');
-    if (contentText) {
-      const paragraphs = contentText.split('\n').filter(p => p.trim());
-      for (const p of paragraphs) {
-        wrappedText(p.trim(), 8, false);
-      }
-    }
-    if (inlineFields.length > 0) {
-      y += 2;
-      doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.setLineWidth(0.15);
-      for (const f of inlineFields) {
-        fieldRow(f.label + ':', f.value);
-        doc.line(mL, y - 0.5, pageW - mR, y - 0.5);
-      }
-    }
-    y += 4;
-
-    // ===================================================================
-    // DECLARACIONES DEL PACIENTE
-    // ===================================================================
-    sectionTitle(s.pdfDecl || 'Declaraciones del Paciente');
-    declCheckbox(!!datos.declara_informado, s.pdfDeclInformed || 'He sido informado/a de manera clara sobre el procedimiento, riesgos, beneficios y alternativas.', false);
-    declCheckbox(!!datos.declara_preguntas, s.pdfDeclQuestions || 'He tenido la oportunidad de hacer preguntas y todas han sido respondidas satisfactoriamente.', false);
-    declCheckbox(!!datos.declara_voluntario, s.pdfDeclVoluntary || 'Autorizo de manera libre y voluntaria la realizacion del procedimiento descrito.', false);
-    declCheckbox(!!datos.declara_revocar, s.pdfDeclRevoke || 'Entiendo que puedo revocar este consentimiento en cualquier momento.', false);
-    declCheckbox(!!datos.declara_no_autoriza, s.pdfDeclNoAuth || 'NO AUTORIZO la realizacion del procedimiento descrito en este consentimiento.', true);
-
-    if (datos.declara_no_autoriza && datos.motivo_no_autoriza) {
-      checkPage(18);
-      doc.setFillColor(255, 243, 243);
-      const motLines = doc.splitTextToSize(datos.motivo_no_autoriza, uW - 12);
-      const motH = motLines.length * 4 + 10;
-      doc.roundedRect(mL, y - 2, uW, motH, 1.5, 1.5, 'F');
-      doc.setDrawColor(200, 50, 50);
-      doc.setLineWidth(0.4);
-      doc.roundedRect(mL, y - 2, uW, motH, 1.5, 1.5, 'S');
-      doc.setFillColor(200, 50, 50);
-      doc.rect(mL, y - 2, 2.5, motH, 'F');
-      y += 2;
-      doc.setFontSize(7.5);
-      doc.setFont('helvetica', 'bold');
-      doc.setTextColor(180, 30, 30);
-      doc.text((s.pdfNoAuthReason || 'MOTIVO DE NO AUTORIZACION:').toUpperCase(), mL + 5, y);
-      y += 5;
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
-      doc.text(motLines, mL + 5, y);
-      y += motLines.length * 4 + 4;
-    }
-    y += 3;
-
-    // ===================================================================
-    // OBSERVACIONES
-    // ===================================================================
-    if (datos.observaciones) {
-      sectionTitle(s.pdfObs || 'Observaciones');
-      doc.setFillColor(252, 252, 252);
-      const obsLines = doc.splitTextToSize(datos.observaciones, uW - 8);
-      const obsH = obsLines.length * 4 + 6;
-      checkPage(obsH + 4);
-      doc.roundedRect(mL, y - 2, uW, obsH, 1.5, 1.5, 'F');
-      doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.setLineWidth(0.2);
-      doc.roundedRect(mL, y - 2, uW, obsH, 1.5, 1.5, 'S');
-      y += 2;
-      doc.setFontSize(8);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(60, 60, 60);
-      doc.text(obsLines, mL + 4, y);
-      y += obsLines.length * 4 + 5;
-    }
-
-    // ===================================================================
-    // CONSTANCIA DE FIRMAS
-    // ===================================================================
-    checkPage(75);
-    doc.setDrawColor(teal[0], teal[1], teal[2]);
-    doc.setLineWidth(0.6);
-    doc.line(mL, y, pageW - mR, y);
-    y += 6;
-
-    doc.setFontSize(11);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(tealDark[0], tealDark[1], tealDark[2]);
-    doc.text(s.pdfSignTitle || 'CONSTANCIA DE FIRMAS', mL, y);
-    y += 8;
-
-    const sigColW = (uW - 10) / 2;
-    const sigLeftX = mL;
-    const sigRightX = mL + sigColW + 10;
-    const sigStartY = y;
-
-    // --- FIRMA DEL PACIENTE (izquierda) ---
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(teal[0], teal[1], teal[2]);
-    doc.text('FIRMA DEL PACIENTE', sigLeftX, y);
-    y += 5;
-
-    try {
-      doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
-      doc.setLineWidth(0.15);
-      doc.roundedRect(sigLeftX, y - 1, 55, 24, 1, 1, 'S');
-      doc.addImage(signatureDataUrl, 'PNG', sigLeftX + 2, y, 51, 22);
-      y += 26;
-    } catch (e) {
-      y += 5;
-    }
-
-    doc.setDrawColor(darkText[0], darkText[1], darkText[2]);
-    doc.setLineWidth(0.5);
-    doc.line(sigLeftX, y, sigLeftX + sigColW, y);
-    y += 4;
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(darkText[0], darkText[1], darkText[2]);
-    doc.text(patient.nombre, sigLeftX, y);
-    y += 4;
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(grayText[0], grayText[1], grayText[2]);
-    doc.text((patient.tipoDoc || 'C.C.') + ' ' + patient.cedula, sigLeftX, y);
-    y += 5;
-    doc.text((s.pdfDateTime || 'Fecha y hora: ') + new Date().toLocaleString('es-CO'), sigLeftX, y);
-    const patientEndY = y;
-
-    // --- FIRMA DEL MÉDICO (derecha) ---
-    const pc = patient.consentimientos?.[consent.id];
-    const firmaMedico = pc?.datosMedico?._firmaMedico;
-    const fechaFirmaMedico = pc?.datosMedico?._fechaFirmaMedico;
-    const nombreMedico = pc?.datosMedico?.medico || datos.medico || '';
-    const registroMedico = pc?.datosMedico?.registroMedico || datos.registroMedico || '';
-
-    let yDoc = sigStartY;
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(teal[0], teal[1], teal[2]);
-    doc.text('FIRMA DEL MÉDICO', sigRightX, yDoc);
-    yDoc += 5;
-
-    if (firmaMedico) {
-      try {
-        doc.setDrawColor(lightGray[0], lightGray[1], lightGray[2]);
-        doc.setLineWidth(0.15);
-        doc.roundedRect(sigRightX, yDoc - 1, 55, 24, 1, 1, 'S');
-        doc.addImage(firmaMedico, 'PNG', sigRightX + 2, yDoc, 51, 22);
-        yDoc += 26;
-      } catch (e) {
-        yDoc += 5;
-      }
-    } else {
-      yDoc += 26;
-    }
-
-    doc.setDrawColor(darkText[0], darkText[1], darkText[2]);
-    doc.setLineWidth(0.5);
-    doc.line(sigRightX, yDoc, sigRightX + sigColW, yDoc);
-    yDoc += 4;
-
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(darkText[0], darkText[1], darkText[2]);
-    doc.text(nombreMedico || 'Médico tratante', sigRightX, yDoc);
-    yDoc += 4;
-    doc.setFontSize(8);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(grayText[0], grayText[1], grayText[2]);
-    if (registroMedico) {
-      doc.text('Reg. Médico: ' + registroMedico, sigRightX, yDoc);
-      yDoc += 4;
-    }
-    yDoc += 1;
-    if (fechaFirmaMedico) {
-      doc.text('Fecha y hora: ' + new Date(fechaFirmaMedico).toLocaleString('es-CO'), sigRightX, yDoc);
-    }
-
-    y = Math.max(patientEndY, yDoc) + 6;
-
-    doc.setFillColor(teal[0], teal[1], teal[2]);
-    doc.roundedRect(mL, y, 48, 5, 0.8, 0.8, 'F');
-    doc.setFontSize(6.5);
-    doc.setFont('helvetica', 'bold');
-    doc.setTextColor(255, 255, 255);
-    doc.text(s.pdfDigital || 'Documento firmado digitalmente', mL + 2, y + 3.4);
-    y += 10;
-
-    // Texto legal
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'normal');
-    doc.setTextColor(150, 150, 150);
-    const legal = s.pdfLegal || 'El/La firmante declara que ha leido y comprendido en su totalidad el contenido del consentimiento informado, que ha recibido explicacion clara y suficiente sobre los procedimientos, riesgos, beneficios y alternativas, y que firma de manera voluntaria el presente documento como constancia de su aceptacion.';
-    const legalLines = doc.splitTextToSize(legal, uW);
-    checkPage(legalLines.length * 3 + 5);
-    doc.text(legalLines, mL, y);
-
-    // ===================================================================
-    // PIE DE PAGINA — numero de pagina en todas las paginas
-    // ===================================================================
-    const totalPages = doc.internal.getNumberOfPages();
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      doc.setFillColor(teal[0], teal[1], teal[2]);
-      doc.rect(0, pageH - 3, pageW, 3, 'F');
-      doc.setFontSize(7);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(grayText[0], grayText[1], grayText[2]);
-      doc.text(formTitle, mL, pageH - 5);
-      doc.setTextColor(darkText[0], darkText[1], darkText[2]);
-      doc.setFont('helvetica', 'bold');
-      doc.text(i + ' / ' + totalPages, pageW - mR - 8, pageH - 5);
-    }
-
-    const pdfBlob = doc.output('blob');
-    const pdfBase64 = await blobToBase64(pdfBlob);
-
-    await api('POST', '/api/sign', {
-      cedula: patient.cedula,
-      consentId: parseInt(consentId),
-      pdfBase64,
-      titulo: consent.titulo,
-      signatures: signaturesPayload
-    });
-
-    if (typeof clearCurrentFormDraft === 'function') clearCurrentFormDraft('consent');
-    showToast('Consentimiento firmado y guardado exitosamente');
-
-    document.getElementById('signatureSection').style.display = 'none';
-    document.getElementById('signedBanner').style.display = 'flex';
-    document.getElementById('signedDate').textContent = 'Firmado el ' + new Date().toLocaleString('es-CO');
-
-    document.querySelectorAll('#consentForm input, #consentForm textarea, #consentForm select').forEach(el => {
-      el.readOnly = true;
-      el.disabled = true;
-    });
-
-    setTimeout(() => { window.location.assign('paciente.html'); }, 2500);
-
-  } catch (err) {
-    console.error('Error al firmar:', err);
-    showToast('Error al generar el documento: ' + err.message, 'error');
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg> Firmar y generar PDF';
   }
 }
 
@@ -1357,7 +1531,7 @@ async function generateRevocationPdf(consent, patient, consentId, cedula, signat
       await new Promise((resolve, reject) => {
         logoImg.onload = resolve;
         logoImg.onerror = reject;
-        logoImg.src = 'assets/descarga.png';
+        logoImg.src = '/assets/descarga.png';
       });
       const cvs = document.createElement('canvas');
       cvs.width = logoImg.naturalWidth;

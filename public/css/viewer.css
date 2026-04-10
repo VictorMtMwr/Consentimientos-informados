@@ -190,6 +190,7 @@
   border-radius: 0;
   padding: 0;
   max-height: none;
+  overflow-x: hidden;
   overflow-y: visible;
   font-size: 0.875rem;
   line-height: 1.6;
@@ -468,6 +469,18 @@
 .anx-doc .anx-p {
   text-align: justify;
 }
+.anx-prose-list {
+  margin: 0.5rem 0 1rem;
+  padding-left: 1.35rem;
+  line-height: 1.65;
+  color: #1e293b;
+}
+.anx-prose-list li {
+  margin: 0.35rem 0;
+}
+.anx-prose-list--square {
+  list-style-type: square;
+}
 .anx-note {
   margin: 4px 0 8px;
   font-size: 11px;
@@ -503,20 +516,30 @@
   white-space: nowrap;
 }
 .anx-inline-check {
-  display: inline-flex;
-  align-items: center;
+  display: flex;
+  align-items: flex-start;
   gap: 4px;
-  margin: 0 5px;
+  margin: 0;
   font-weight: 600;
-  white-space: nowrap;
+  white-space: normal;
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 .anx-inline-check input[type="checkbox"] {
   appearance: auto;
   -webkit-appearance: checkbox;
   width: 15px;
   height: 15px;
-  margin: 0;
+  margin: 2px 0 0;
   accent-color: #0f766e;
+  flex: 0 0 auto;
+}
+.anx-row.anx-row--compact {
+  align-items: flex-start;
+  margin: 6px 0;
+}
+.anx-row.anx-row--compact .ax-full-line {
+  min-width: 0;
 }
 .anx-decl-item {
   display: flex;
